@@ -9,7 +9,7 @@
   "Extrait": "Capitale de la Lombardie, c'est la deuxième ville d'Italie par sa population, avec environ 1,4 million d'habitants. Elle est le moteur économique du pays, et aussi sa capitale de la mode et du design.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Milan",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 2,
@@ -21,7 +21,7 @@
   "Extrait": "Les Milanais appellent ainsi la statue dorée de la Vierge, au sommet du Duomo. Une tradition voulait qu'aucun édifice ne la dépasse : lorsque la tour Pirelli l'a fait, une copie de la Madonnina a été installée à son sommet.",
   "Image": "",
   "Url": "",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 3,
@@ -33,7 +33,7 @@
   "Extrait": "Inaugurée en 1867, cette galerie couverte d'une verrière relie la place du Duomo à celle de la Scala. La tradition veut qu'on tourne sur son talon, sur la mosaïque du taureau, pour s'attirer la chance.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Galerie_Victor-Emmanuel_II",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 4,
@@ -45,7 +45,7 @@
   "Extrait": "Cette forteresse du XVe siècle a été reconstruite par Francesco Sforza sur les ruines d'un château des Visconti. Elle abrite aujourd'hui plusieurs musées et collections d'art.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Ch%C3%A2teau_des_Sforza",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 5,
@@ -57,7 +57,7 @@
   "Extrait": "Installée dans un palais du quartier de Brera, elle réunit l'une des plus belles collections de peinture italienne. On y voit notamment Le Christ mort de Mantegna.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Pinacoth%C3%A8que_de_Brera",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 6,
@@ -69,7 +69,7 @@
   "Extrait": "Cette famille gouverne Milan du XIIIe au XVe siècle et étend son pouvoir sur une grande partie de l'Italie du Nord. Les Sforza prennent ensuite sa suite à la tête du duché.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Famille_Visconti",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 7,
@@ -81,7 +81,7 @@
   "Extrait": "Évêque de Milan à partir de 374, il est le saint patron de la ville. Sa fête, le 7 décembre, est un jour férié local et ouvre la saison de la Scala.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Ambroise_de_Milan",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 8,
@@ -93,7 +93,7 @@
   "Extrait": "Ce réseau de canaux a longtemps servi à transporter marchandises et matériaux, dont le marbre destiné à la construction du Duomo. Aujourd'hui, ses rives sont un quartier animé de bars et de restaurants.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Navigli",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 9,
@@ -105,7 +105,7 @@
   "Extrait": "Inaugurée en 1931, c'est l'une des plus grandes gares d'Europe. Son architecture monumentale, faite de marbre et de grandes verrières, impressionne dès l'entrée.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Gare_de_Milan-Centrale",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 10,
@@ -117,7 +117,7 @@
   "Extrait": "Dessiné par Gio Ponti, ce gratte-ciel de 127 m est inauguré en 1958 et reste un symbole du renouveau de l'après-guerre. Il accueille aujourd'hui des bureaux de la région Lombardie.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Tour_Pirelli",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 11,
@@ -129,7 +129,7 @@
   "Extrait": "Milan a accueilli l'Exposition universelle de 2015, sur le thème de l'alimentation, « Nourrir la planète, énergie pour la vie ». Elle a laissé derrière elle de nouveaux quartiers et lieux de rencontre.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Exposition_universelle_de_2015",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 12,
@@ -141,7 +141,7 @@
   "Extrait": "Deux fois par an, la ville accueille les défilés des plus grandes maisons italiennes. Le quartier du Quadrilatero della moda, autour de la via Montenapoleone, concentre les boutiques de luxe.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Semaine_de_la_mode_de_Milan",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 13,
@@ -153,7 +153,7 @@
   "Extrait": "Cette grande brioche aux raisins secs et aux fruits confits est le gâteau de Noël milanais, devenu populaire dans toute l'Italie. Son origine est entourée de légendes concurrentes.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Panettone",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 14,
@@ -165,7 +165,7 @@
   "Extrait": "Ce plat se reconnaît à sa couleur jaune, donnée par le safran. Il accompagne traditionnellement l'osso-buco, l'autre grand plat du répertoire milanais.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Risotto_%C3%A0_la_milanaise",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 15,
@@ -177,7 +177,7 @@
   "Extrait": "Ce plat est fait de rondelles de jarret de veau, avec l'os et sa moelle, mijotées doucement. Il est souvent servi avec la gremolata, un mélange de persil, d'ail et de zeste de citron.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Osso-buco",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 16,
@@ -189,7 +189,7 @@
   "Extrait": "La cotoletta alla milanese est une côte de veau panée et frite au beurre, traditionnellement servie avec l'os. Les Milanais et les Viennois se disputent depuis longtemps son origine.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Escalope_%C3%A0_la_milanaise",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 17,
@@ -201,7 +201,7 @@
   "Extrait": "À Milan, l'apéritif est un rituel de fin de journée : on commande un verre et on se sert dans un buffet de petites assiettes. Le Campari, qui a fait la renommée de la ville, y tient une place de choix.",
   "Image": "",
   "Url": "",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 18,
@@ -213,7 +213,7 @@
   "Extrait": "Ce masque de la commedia dell'arte, valet malin et bon vivant, est le symbole populaire de Milan. Il est aussi un personnage de la tradition théâtrale en dialecte milanais.",
   "Image": "",
   "Url": "",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 19,
@@ -225,7 +225,7 @@
   "Extrait": "Le club naît en 1908 d'une scission avec le Milan, d'où son nom d'« Internazionale » : il voulait accueillir joueurs étrangers et Italiens. Ses couleurs sont le noir et le bleu.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Inter_Milan",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 20,
@@ -237,7 +237,7 @@
   "Extrait": "Inauguré en 1926, le stade est officiellement baptisé Giuseppe-Meazza. Il est partagé par l'AC Milan et l'Inter, une particularité dans le football européen.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Stade_Giuseppe-Meazza",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 21,
@@ -249,7 +249,7 @@
   "Extrait": "Ouvert en 1866, ce cimetière est un véritable musée à ciel ouvert, avec des tombes ornées de sculptures et de chapelles de style éclectique. Beaucoup de familles milanaises célèbres y reposent.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Cimeti%C3%A8re_monumental_de_Milan",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 22,
@@ -261,7 +261,7 @@
   "Extrait": "",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Giuseppe_Verdi",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 23,
@@ -273,7 +273,7 @@
   "Extrait": "Cette cathédrale gothique en marbre rose de Candoglia est l'une des plus grandes d'Europe. Son chantier débute en 1386 et s'étire sur près de six siècles, avec des milliers de statues et de flèches.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Cath%C3%A9drale_de_Milan",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 24,
@@ -285,7 +285,7 @@
   "Extrait": "Léonard la peint à la fin du XVe siècle sur un mur du réfectoire de Santa Maria delle Grazie. Sa technique expérimentale l'a fragilisée très tôt : elle a demandé de nombreuses restaurations, dont une très longue achevée en 1999.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/La_C%C3%A8ne_(L%C3%A9onard_de_Vinci)",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 25,
@@ -297,7 +297,7 @@
   "Extrait": "Inauguré en 1778, ce théâtre est l'un des opéras les plus prestigieux du monde. La saison s'y ouvre chaque année le 7 décembre, jour de la Saint-Ambroise, patron de la ville.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Scala_de_Milan",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 26,
@@ -309,7 +309,7 @@
   "Extrait": "Dernière sculpture de Michel-Ange, travaillée jusqu'à quelques jours avant sa mort en 1564, elle est restée inachevée. Elle est exposée au château des Sforza.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Pi%C3%A9t%C3%A0_Rondanini",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 27,
@@ -321,7 +321,7 @@
   "Extrait": "Fondée en 1609 par le cardinal Federico Borromeo, elle conserve le Codex Atlanticus, un immense recueil de dessins et de notes de Léonard de Vinci.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Biblioth%C3%A8que_ambrosienne",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 28,
@@ -333,7 +333,7 @@
   "Extrait": "En 313, les empereurs Constantin et Licinius accordent la liberté de culte dans l'Empire romain, ce qui met fin aux persécutions contre les chrétiens. Milan était alors une capitale impériale.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/%C3%89dit_de_Milan",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 29,
@@ -345,7 +345,7 @@
   "Extrait": "En mars 1848, les Milanais se soulèvent contre l'occupant autrichien et le forcent à quitter la ville pour quelques mois. Cette insurrection marque une étape du Risorgimento.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Cinq_Journ%C3%A9es_de_Milan",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 30,
@@ -357,7 +357,7 @@
   "Extrait": "Ces deux tours résidentielles, conçues par Stefano Boeri et achevées en 2014, portent plusieurs centaines d'arbres sur leurs balcons. Elles sont devenues un emblème de l'architecture verte.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/Bosco_Verticale",
-  "Debut": "2027-01-15"
+  "Debut": ""
  },
  {
   "id": 31,
@@ -369,6 +369,6 @@
   "Extrait": "Fondé en 1899 par l'Anglais Herbert Kilpin, le club est l'un des plus titrés d'Europe. Il a remporté la Ligue des champions à sept reprises.",
   "Image": "",
   "Url": "https://fr.wikipedia.org/wiki/AC_Milan",
-  "Debut": "2027-01-15"
+  "Debut": ""
  }
 ]
