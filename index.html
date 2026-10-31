@@ -307,8 +307,7 @@
   <p>Ta progression est stockée dans ce navigateur. Exporte-la régulièrement : elle est perdue si tu vides les données du site.</p>
   <div id="sauv-btns">
     <button id="sauv-export" type="button">Exporter</button>
-        <button id="sauv-import" type="button">Importer</button>
-    <button id="sauv-reset" type="button" style="background:#b91c1c">Réinitialiser</button>
+    <button id="sauv-import" type="button">Importer</button>
   </div>
   <input id="sauv-file" type="file" accept=".json,application/json" hidden>
   <div id="sauv-msg"></div>
@@ -384,7 +383,8 @@
 <div id="toast"></div>
 
 <script>
-const DEBUG = false;          // true = ignore la limite quotidienne (tests)
+const TEST = new URLSearchParams(location.search).has('test');   // ouvrir l'appli avec ?test à la fin de l'URL
+const DEBUG = TEST;           // true = ignore la limite quotidienne (tests)
 const HEURE_TIRAGE = 12;
 const TZ = 'Europe/Paris';
 const NB = 3;                 // cartes par paquet
@@ -427,7 +427,7 @@ function numeroter(pool){
 
 // ---- stockage : pool.json (lecture seule, dans le dépôt) + localStorage (progression du joueur) ----
 const POOL_URL = 'pool.json';
-const CLE_STOCK = 'paquet-du-jour-v1';
+const CLE_STOCK = TEST ? 'paquet-du-jour-test' : 'paquet-du-jour-v1';   // en mode test : progression séparée de la vraie
 let stock = {tirages: [], collection: [], seq: 1}, poolPromise = null;
 function lireStock(){
   try{
@@ -503,7 +503,7 @@ async function charger(){
   // colonne Debut du Pool (Date ou texte AAAA-MM-JJ, facultative) : un album n'existe qu'à partir de sa date de sortie (12h00, heure de Paris)
   const auj = cleJour(new Date(Date.now() + decalage));
   const dispo = c => {
-    if (APERCU || !c.Debut) return true;
+    if (APERCU || TEST || !c.Debut) return true;
     const d = normJour(c.Debut).slice(0, 10);
     return !/^\d{4}-\d{2}-\d{2}$/.test(d) || d <= auj;
   };
@@ -1525,16 +1525,8 @@ function lireStockDepuis(s){
   return s;
 }
 
-$('sauv-reset').onclick = async () => {
-  if (!confirm('Effacer toute la progression (cartes, favoris, énigmes) ? Pense à exporter avant.')) return;
-  try{ localStorage.removeItem(CLE_STOCK); }catch(e){}
-  stock = {tirages: [], collection: [], seq: 1};
-  msgSauv('Progression réinitialisée.');
-  await afficher();
-  onglet('jour');
-};
-
 try{ navigator.storage && navigator.storage.persist && navigator.storage.persist(); }catch(e){}   // demande de ne pas effacer le stockage
+if (TEST) document.body.insertAdjacentHTML('afterbegin', '<div style="background:#b45309;color:#fff;text-align:center;padding:6px 10px;font-size:13px;font-weight:700;border-radius:8px;margin-bottom:8px">🧪 Mode test : progression séparée, tirages illimités, albums à venir débloqués</div>');
 majOnglet('jour');
 afficher().catch(e => { $('info').textContent = 'Erreur : ' + e.message; });
 </script>
