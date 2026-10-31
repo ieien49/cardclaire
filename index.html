@@ -78,7 +78,8 @@
   .carte.deal{animation:deal .55s cubic-bezier(.2,.8,.2,1) both}
   @keyframes deal{from{opacity:0;transform:translateY(-140px) scale(.5) rotate(-8deg)}to{opacity:1;transform:none}}
 
-  .grille{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+  #coll-grille{grid-template-columns:repeat(3,1fr);gap:8px}
   .carte{position:relative;aspect-ratio:3/5;perspective:800px;cursor:pointer}
   .in{position:absolute;inset:0;transition:transform .5s;transform-style:preserve-3d;-webkit-transform-style:preserve-3d}
   .carte.on .in{transform:rotateY(180deg)}
