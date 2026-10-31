@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Paquet du jour</title>
+<style>
+  :root{
+    --p-graticule:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='none' stroke='white' stroke-opacity='.2'%3E%3Cellipse cx='50' cy='50' rx='20' ry='48'/%3E%3Cellipse cx='50' cy='50' rx='40' ry='48'/%3E%3Cpath d='M50 0V100M0 25H100M0 50H100M0 75H100'/%3E%3C/svg%3E");
+    --p-relief:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' fill='none' stroke='white' stroke-opacity='.18'%3E%3Cpath d='M0 20Q30 0 60 20T120 20M0 50Q30 30 60 50T120 50M0 80Q30 60 60 80T120 80M0 110Q30 90 60 110T120 110'/%3E%3C/svg%3E");
+    --p-grille:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' fill='none' stroke='white' stroke-opacity='.18'%3E%3Cpath d='M0 0H80M0 40H80M0 0V80M40 0V80'/%3E%3Ccircle cx='40' cy='40' r='3' fill='white' fill-opacity='.25'/%3E%3C/svg%3E");
+    --p-rose:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='none' stroke='white' stroke-opacity='.2'%3E%3Ccircle cx='50' cy='50' r='28'/%3E%3Cpath d='M50 10V90M10 50H90M22 22L78 78M78 22L22 78'/%3E%3C/svg%3E");
+  }
+  :root{--nav-h:calc(64px + env(safe-area-inset-bottom))}
+  body{margin:0;padding:12px 12px calc(var(--nav-h) + 12px);font-family:-apple-system,system-ui,sans-serif;background:#f4f1ea;color:#222}
+
+  /* en-tête */
+  #top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 2px 10px}
+  #top h1{margin:0;font-size:22px;line-height:1.15}
+  #top h1 small{display:block;font-size:12px;font-weight:500;color:#777;margin-top:2px}
+  #top h1 small b{font-variant-numeric:tabular-nums;color:#3b5b92;font-size:13px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .chip{background:#fff;border-radius:16px;padding:5px 10px;font-size:12px;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12);white-space:nowrap}
+
+  /* tuiles d'accueil */
+  #tuiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+  .tuile{position:relative;overflow:hidden;border:0;border-radius:18px;padding:14px;min-height:124px;color:#fff;text-align:left;font:inherit;
+    cursor:pointer;display:flex;flex-direction:column;justify-content:flex-end;gap:3px;box-shadow:0 6px 14px rgba(0,0,0,.2);
+    transition:transform .15s;-webkit-tap-highlight-color:transparent}
+  .tuile:active{transform:scale(.96)}
+  .tuile b{font-size:17px}
+  .tuile small{opacity:.9;font-size:12px}
+  .t-ico{position:absolute;top:8px;right:12px;font-size:46px;opacity:.9;line-height:1}
+  .t-alb{background:var(--p-graticule),linear-gradient(135deg,#3b5b92,#6a3b92)}
+  .t-fav{background:linear-gradient(135deg,#f43f5e,#be185d)}
+  .tuile .barre{background:rgba(255,255,255,.3);margin-top:4px}
+  .tuile .barre i{background:#fff}
+
+  /* barre d'onglets */
+  #nav{position:fixed;left:0;right:0;bottom:0;z-index:8;display:flex;justify-content:space-around;
+    background:rgba(255,255,255,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border-top:1px solid #ddd;padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
+  #nav button{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;
+    color:#888;font:inherit;font-size:11px;font-weight:600;padding:4px 0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  #nav .ic{font-size:22px;line-height:1;transition:transform .2s}
+  #nav button.actif{color:#3b5b92}
+  #nav button.actif .ic{transform:translateY(-3px) scale(1.15)}
+  #nav button.actif::before{content:'';position:absolute;top:-7px;width:28px;height:3px;border-radius:0 0 3px 3px;background:#3b5b92}
+  #nav button[data-tab="favoris"].actif{color:#e11d48}
+  #nav button[data-tab="favoris"].actif::before{background:#e11d48}
+
+  /* pochette à déchirer */
+  .pochette-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;padding:24px 0}
+  .pochette{position:relative;width:min(62vw,210px);aspect-ratio:2/3;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;
+    animation:wiggle 2.8s ease-in-out infinite;filter:drop-shadow(0 10px 14px rgba(0,0,0,.35))}
+  .pochette.dechire,.pochette.sort{animation:none}
+  .p-haut,.p-corps{position:absolute;left:0;right:0;color:#fff;
+    background:repeating-linear-gradient(90deg,rgba(255,255,255,.28) 0 2px,transparent 2px 7px),linear-gradient(160deg,#4b6cb7,#6a3b92 55%,#2b1f5c)}
+  .p-haut{top:0;height:15%;z-index:3;border-radius:10px 10px 0 0;transform-origin:100% 100%}
+  .p-corps{top:14%;bottom:0;z-index:2;border-radius:0 0 10px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;overflow:hidden}
+  .p-corps::before{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.35) 50%,transparent 65%);
+    background-size:250% 100%;animation:brille 3.2s linear infinite}
+  .p-corps .logo{font-size:54px}
+  .p-corps b{font-size:15px;letter-spacing:.12em}
+  .p-corps small{opacity:.85}
+  .p-guide{position:absolute;left:0;right:0;top:15%;z-index:4;transform:translateY(-50%);height:0;border-top:2px dashed rgba(255,255,255,.9);pointer-events:none}
+  .p-guide span{position:absolute;left:6px;top:-13px;font-size:18px}
+  .p-peek{position:absolute;left:8%;right:8%;top:12%;height:30%;z-index:1;border-radius:8px;background:#fff;border:3px solid #ddd;transition:transform .5s}
+  .pochette.dechire .p-corps{clip-path:polygon(0 3%,8% 0,16% 3%,24% 0,32% 3%,40% 0,48% 3%,56% 0,64% 3%,72% 0,80% 3%,88% 0,100% 3%,100% 100%,0 100%)}
+  .pochette.dechire .p-guide{display:none}
+  .pochette.dechire .p-peek{transform:translateY(-34px) rotate(-3deg)}
+  .pochette.sort{transition:transform .5s ease-in,opacity .5s;transform:translateY(60px) scale(.85);opacity:0}
+  .p-hint{color:#555;font-size:14px;font-weight:600}
+  @keyframes wiggle{0%,86%,100%{transform:rotate(0)}90%{transform:rotate(-2.5deg)}94%{transform:rotate(2.5deg)}98%{transform:rotate(-1deg)}}
+  @keyframes brille{from{background-position:150% 0}to{background-position:-100% 0}}
+  .carte.deal{animation:deal .55s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes deal{from{opacity:0;transform:translateY(-140px) scale(.5) rotate(-8deg)}to{opacity:1;transform:none}}
+
+  .grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+  .carte{position:relative;aspect-ratio:3/5;perspective:800px;cursor:pointer}
+  .in{position:absolute;inset:0;transition:transform .5s;transform-style:preserve-3d;-webkit-transform-style:preserve-3d}
+  .carte.on .in{transform:rotateY(180deg)}
+  .dos,.face{position:absolute;inset:0;border-radius:12px;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-sizing:border-box}
+
+  /* verso (et bandeau sans image, et couvertures d'album) : défaut puis variantes par source */
+  .dos,.ph,.al-couv{background:var(--p-graticule),linear-gradient(135deg,#3b5b92,#6a3b92)}
+  .s-wikipedia .dos,.s-wikipedia .ph,.s-wikipedia .al-couv{background:var(--p-graticule),linear-gradient(135deg,#3b5b92,#1f3a6b)}
+  .s-gallica .dos,.s-gallica .ph,.s-gallica .al-couv{background:var(--p-relief),linear-gradient(135deg,#8b3a3a,#4a1e1e)}
+  .s-science .dos,.s-science .ph,.s-science .al-couv{background:var(--p-grille),linear-gradient(135deg,#2f7d6d,#14453c)}
+  .s-mot .dos,.s-mot .ph,.s-mot .al-couv{background:var(--p-rose),linear-gradient(135deg,#c47a2c,#7a4310)}
+  .dos{display:flex;align-items:center;justify-content:center;font-size:48px;color:rgba(255,255,255,.85)}
+  .dos::after{content:'';position:absolute;inset:8px;border:1px solid rgba(255,255,255,.35);border-radius:8px}
+
+  /* recto : visuel en haut, texte en dessous */
+  .face{transform:rotateY(180deg);background:#fff;padding:0;overflow:hidden;border:3px solid #bbb;font-size:13px;display:flex;flex-direction:column}
+  .r-rare .face{border-color:#3b82f6}
+  .r-legendaire .face{border-color:#f59e0b}
+  .vis{flex:none;height:43%;position:relative}
+  .vis img{display:block;width:100%;height:100%;object-fit:cover}
+  .txt{flex:1;overflow:auto;padding:8px 10px}
+  .txt small{color:#666;text-transform:uppercase;font-size:10px}
+  .rar{font-size:15px;margin-left:4px;color:#999;vertical-align:-1px}
+  .r-rare .rar{color:#3b82f6}
+  .r-legendaire .rar{color:#f59e0b}
+  .txt h3{margin:4px 0;font-size:15px}
+  .txt p{margin:4px 0}
+
+  /* favori */
+  .fav{position:absolute;top:6px;right:6px;z-index:2;width:34px;height:34px;padding:0;border:0;border-radius:50%;
+    background:rgba(255,255,255,.88);color:#999;font-size:20px;line-height:1;cursor:pointer}
+  .fav.est{color:#e11d48}
+
+  #info{margin-top:14px;text-align:center;color:#555;font-size:13px}
+
+  /* collection */
+  #coll{position:fixed;inset:0 0 var(--nav-h) 0;z-index:5;background:#f4f1ea;overflow:auto;padding:12px}
+  #coll[hidden]{display:none}
+  #coll-head{position:sticky;top:-12px;z-index:3;display:flex;align-items:center;justify-content:space-between;
+    background:#f4f1ea;padding:10px 0;margin-bottom:6px}
+  #coll-titre{font-weight:600;font-size:16px}
+  #coll-close{width:40px;height:40px;border:0;border-radius:50%;background:#ddd;font-size:24px;line-height:1;cursor:pointer}
+  .carte.verrou{cursor:default;opacity:.45}
+
+  /* albums */
+  [hidden]{display:none!important}
+  #albums{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;margin-top:4px}
+  .album{border:0;background:none;padding:0;font:inherit;color:#222;cursor:pointer;display:flex;flex-direction:column;gap:6px;text-align:left}
+  .al-couv{position:relative;aspect-ratio:3/4;border-radius:6px 14px 14px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+    color:#fff;text-align:center;padding:10px;box-shadow:inset 8px 0 0 rgba(0,0,0,.25),0 4px 10px rgba(0,0,0,.25)}
+  .al-ico{font-size:44px}
+  .al-couv b{font-size:17px}
+  .al-couv small{opacity:.8;text-transform:uppercase;font-size:10px;letter-spacing:.1em}
+  .al-ok{position:absolute;top:10px;right:-6px;background:#f59e0b;color:#fff;font-style:normal;font-size:10px;font-weight:700;padding:3px 8px;border-radius:3px;transform:rotate(6deg)}
+  .al-n{font-size:12px;color:#555;text-align:center}
+  #al-prog{background:#fff;border-radius:12px;padding:10px 12px;margin:0 0 10px;font-size:13px}
+  .num{font-weight:700;color:#3b5b92;margin-right:4px}
+  .verrou .dos{flex-direction:column;font-size:22px;font-weight:700}
+  .verrou .dos::after{border-style:dashed}
+  .r-legendaire .face{box-shadow:inset 0 0 18px rgba(245,158,11,.45)}
+
+  /* statistiques */
+  #stats{background:#fff;border-radius:12px;padding:10px 12px;margin:0 0 10px;font-size:13px}
+  #st-top{display:flex;justify-content:space-between;margin-bottom:6px;font-weight:600}
+  .barre{height:8px;border-radius:4px;background:#e4e0d6;overflow:hidden}
+  .barre i{display:block;height:100%;background:#3b5b92}
+  #st-serie{margin-top:8px;color:#444}
+  #stats details{margin-top:8px}
+  #stats summary{cursor:pointer;color:#555}
+  .st-l{display:grid;grid-template-columns:90px 1fr 56px;gap:8px;align-items:center;margin-top:6px}
+  .st-l span:last-child{text-align:right;color:#555}
+  .st-h{margin-top:10px;font-size:11px;text-transform:uppercase;color:#888}
+
+  /* filtres */
+  #filtres{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+  #filtres input,#filtres select{font:inherit;font-size:14px;padding:8px 10px;border:1px solid #ccc;border-radius:8px;background:#fff;color:#222}
+  #f-q{flex:1 1 160px;min-width:0}
+  #vide{text-align:center;color:#666;padding:30px 0}
+  #vide[hidden]{display:none}
+
+  /* visionneuse plein écran */
+  #viewer{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+    background:rgba(15,15,25,.94);padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));touch-action:pan-y}
+  #viewer[hidden]{display:none}
+  #v-close{position:absolute;top:max(10px,env(safe-area-inset-top));right:12px;width:44px;height:44px;border:0;border-radius:50%;
+    background:rgba(255,255,255,.15);color:#fff;font-size:26px;line-height:1;cursor:pointer}
+  #v-stage{display:flex;justify-content:center}
+  .carte.grande{width:min(88vw,400px,calc(70vh*.6));width:min(88vw,400px,calc(70dvh*.6));animation:entree .25s ease}
+  .grande .face{font-size:16px}
+  .grande .txt{padding:12px 14px}
+  .grande .txt h3{font-size:21px}
+  .grande .dos{font-size:72px}
+  .grande .fav{width:40px;height:40px;font-size:24px}
+  @keyframes entree{from{opacity:0;transform:translateX(var(--dx,0))}to{opacity:1;transform:none}}
+  #v-nav{display:flex;align-items:center;gap:22px;color:#fff}
+  #v-nav button{width:56px;height:56px;border:0;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;font-size:34px;line-height:1;cursor:pointer}
+  #v-nav button:disabled{opacity:.25;cursor:default}
+  #v-count{min-width:48px;text-align:center;font-size:15px}
+
+  /* effet holographique des légendaires (visionneuse + révélation) */
+  .grande.r-legendaire .face::after{content:'';position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.75) 45%,rgba(255,215,120,.6) 55%,transparent 70%);
+    background-size:250% 100%;animation:holo 3.2s linear infinite}
+  @keyframes holo{from{background-position:150% 0}to{background-position:-100% 0}}
+
+  /* révélation du paquet, carte par carte */
+  #reveal{position:fixed;inset:0;z-index:12;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+    background:radial-gradient(circle at 50% 40%,#2a2f5c,#0e0f1d 70%);
+    padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))}
+  #reveal[hidden]{display:none}
+  #rv-top{position:absolute;top:max(12px,env(safe-area-inset-top));left:14px;right:14px;display:flex;justify-content:space-between;align-items:center;color:#fff;font-size:14px;font-weight:600}
+  #rv-skip{border:0;border-radius:18px;padding:8px 14px;background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:13px;cursor:pointer}
+  #rv-stage{position:relative;width:min(80vw,360px,calc(62vh*.6));width:min(80vw,360px,calc(62dvh*.6));aspect-ratio:3/5;cursor:pointer}
+  #rv-stage .carte.grande{width:100%}
+  #rv-stage .carte{z-index:1}
+  .rv-behind{position:absolute;inset:0;z-index:0;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.45);pointer-events:none}
+  .carte.grande.neuve{animation:neuve .3s ease}
+  .carte.grande.sortie{animation:sortie .26s ease-in forwards;pointer-events:none}
+  @keyframes neuve{from{opacity:.5;transform:translate(8px,8px) scale(.96)}to{opacity:1;transform:none}}
+  @keyframes sortie{to{opacity:0;transform:translateX(70%) rotate(14deg)}}
+  #rv-hint{color:rgba(255,255,255,.75);font-size:14px;min-height:20px;text-align:center}
+  #rv-stage.trem-r{animation:trem .1s linear infinite;filter:drop-shadow(0 0 16px #3b82f6)}
+  #rv-stage.trem-l{animation:trem .07s linear infinite,montee 1.2s ease-in forwards}
+  @keyframes trem{0%,100%{transform:translate(0,0)}25%{transform:translate(-3px,1px)}50%{transform:translate(3px,-1px)}75%{transform:translate(-2px,-2px)}}
+  @keyframes montee{from{filter:drop-shadow(0 0 0 #f59e0b)}to{filter:drop-shadow(0 0 34px #f59e0b) brightness(1.15)}}
+  #rv-flash{position:absolute;inset:0;pointer-events:none;opacity:0}
+  #rv-flash.fl-rare{animation:fl .7s ease-out;background:radial-gradient(circle,rgba(96,165,250,.85),transparent 65%)}
+  #rv-flash.fl-leg{animation:fl 1.1s ease-out;background:radial-gradient(circle,rgba(253,224,71,.95),rgba(245,158,11,.5) 40%,transparent 70%)}
+  @keyframes fl{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
+
+  /* confettis et toast */
+  #confetti{position:fixed;inset:0;z-index:40;pointer-events:none;overflow:hidden}
+  #confetti i{position:absolute;width:8px;height:12px;border-radius:2px;animation:conf 1.9s cubic-bezier(.25,.6,.4,1) forwards}
+  @keyframes conf{
+    0%{opacity:1;transform:translate(0,0) rotate(0)}
+    35%{opacity:1;transform:translate(calc(var(--cx)*.6),var(--cy)) rotate(calc(var(--rot)*.4))}
+    100%{opacity:0;transform:translate(var(--cx),45vh) rotate(var(--rot))}}
+  #toast{position:fixed;left:50%;top:max(12px,env(safe-area-inset-top));transform:translate(-50%,-160%);z-index:50;max-width:88vw;
+    background:#222;color:#fff;border-radius:14px;padding:10px 16px;font-size:14px;font-weight:600;text-align:center;
+    transition:transform .35s;box-shadow:0 8px 20px rgba(0,0,0,.35);pointer-events:none}
+  #toast.vu{transform:translate(-50%,0)}
+
+  /* sauvegarde de la progression */
+  #sauv-box{margin-top:22px;background:#fff;border-radius:12px;padding:10px 12px;font-size:13px}
+  #sauv-box h2{margin:0 0 6px;font-size:15px}
+  #sauv-box p{margin:0 0 8px;color:#666}
+  #sauv-btns{display:flex;gap:8px;flex-wrap:wrap}
+  #sauv-btns button{border:0;border-radius:10px;padding:9px 14px;background:#3b5b92;color:#fff;font:inherit;font-weight:600;cursor:pointer}
+  #sauv-msg{margin-top:8px;color:#555;min-height:16px}
+
+  /* badges */
+  #badges-box{margin-top:22px}
+  #badges-box h2{margin:0 2px 8px;font-size:15px}
+  #badges-box h2 span{color:#777;font-weight:500;font-size:13px}
+  #badges{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+  .badge{border:0;background:#fff;border-radius:12px;padding:8px 2px;font:inherit;font-size:10px;text-align:center;
+    box-shadow:0 1px 3px rgba(0,0,0,.12);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:#333;-webkit-tap-highlight-color:transparent}
+  .badge i{font-style:normal;font-size:26px;line-height:1}
+  .badge.lock{opacity:.4;filter:grayscale(1)}
+  #badge-desc{margin-top:8px;text-align:center;font-size:12px;color:#555;min-height:16px}
+  .album.a-venir{cursor:default}
+  .album.a-venir .al-couv{background:repeating-linear-gradient(135deg,#8d929c 0 10px,#7b808a 10px 20px);opacity:.8}
+  .badge{word-break:break-word}
+  .badge b{font-size:12px;color:#b45309}
+
+  /* énigme de fin d'album (type Pédantix) */
+  .enigme .dos{flex-direction:column;gap:4px;background:var(--p-rose),linear-gradient(135deg,#f59e0b,#92400e)}
+  .enigme .dos small{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+  .enigme .dos b{font-size:22px}
+  #enigme{position:fixed;inset:0;z-index:11;background:#f4f1ea;overflow:auto;padding:0 12px 28px}
+  #enigme[hidden]{display:none}
+  #en-haut{position:sticky;top:0;z-index:3;background:#f4f1ea;padding:max(10px,env(safe-area-inset-top)) 0 8px}
+  #en-bar{display:flex;align-items:center;gap:10px}
+  #en-close{width:40px;height:40px;flex:none;border:0;border-radius:50%;background:#ddd;font-size:24px;line-height:1;cursor:pointer}
+  #en-titre{flex:1;min-width:0;font-weight:700;font-size:15px}
+  #en-stats{font-size:13px;color:#555;font-variant-numeric:tabular-nums;white-space:nowrap}
+  #en-mot{margin:10px 0 8px;padding:8px 10px;background:#fff;border-radius:10px;font-size:18px;font-weight:700;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
+  #en-mot small{width:100%;font-size:11px;font-weight:600;color:#777;text-transform:uppercase}
+  #en-form{display:flex;gap:8px}
+  #en-in{flex:1;min-width:0;font:inherit;font-size:16px;padding:10px 12px;border:2px solid #3b5b92;border-radius:10px;background:#fff;color:#222}
+  #en-form button{border:0;border-radius:10px;padding:0 16px;background:#3b5b92;color:#fff;font:inherit;font-weight:700;cursor:pointer}
+  #en-msg{min-height:20px;margin-top:6px;font-size:13px;color:#555}
+  #en-res{background:#fff;border-radius:12px;padding:12px;margin:8px 0;text-align:center;font-size:14px}
+  #en-res .en-score{font-size:42px;font-weight:800;color:#b45309;line-height:1.1}
+  #en-res .en-det{margin:6px 0;color:#666;font-size:12px}
+  #en-res button{margin-top:8px;border:0;border-radius:10px;padding:9px 14px;background:#3b5b92;color:#fff;font:inherit;font-weight:600;cursor:pointer}
+  #en-texte{background:#fff;border-radius:12px;padding:12px;margin:8px 0;line-height:1.75;font-size:16px;white-space:pre-wrap}
+  .pw.m{display:inline-block;height:.9em;margin:0 1px;border-radius:3px;background:#34495e;vertical-align:-.1em;width:calc(var(--l) * .62em)}
+  .pw.r{font-weight:700;color:#14532d;background:#bbf7d0;border-radius:4px;padding:0 3px}
+  .pw.neuf{display:inline-block;background:#fbbf24;color:#111;box-shadow:0 0 0 2px #fbbf24;animation:pwflash .9s ease-out}
+  @keyframes pwflash{0%{transform:scale(1.2)}100%{transform:none}}
+  .pw.off{font-weight:400;color:#888;background:none;padding:0}
+  .pw.vu{font-weight:400;color:#b45309;background:none;padding:0}
+  #en-props{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+  .pp{background:#fff;border-radius:14px;padding:3px 9px;font-size:13px;border:1px solid transparent;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+  .pp.ok{border-color:#10b981}
+  .pp.no{color:#999;text-decoration:line-through}
+  #en-actions{display:flex;gap:8px;justify-content:space-between;margin-top:6px}
+  #en-actions button{border:0;border-radius:10px;padding:9px 12px;background:#e8e4d9;font:inherit;font-size:13px;color:#333;cursor:pointer}
+</style>
+</head>
+<body>
+<header id="top">
+  <h1>🎴 Paquet du jour<small id="top-sub">Ta collection quotidienne</small></h1>
+  <div class="chips" id="top-chips"></div>
+</header>
+<div id="app"></div>
+<div id="info"></div>
+
+<div id="tuiles">
+  <button class="tuile t-alb" data-tab="albums">
+    <span class="t-ico">📚</span><b>Mes albums</b><small id="t-alb-n"></small>
+    <div class="barre"><i id="t-alb-b" style="width:0"></i></div>
+  </button>
+  <button class="tuile t-fav" data-tab="favoris">
+    <span class="t-ico">♥</span><b>Mes favoris</b><small id="t-fav-n"></small>
+  </button>
+</div>
+
+<section id="badges-box">
+  <h2>🏅 Badges <span id="badges-n"></span></h2>
+  <div id="badges"></div>
+  <div id="badge-desc">Touche un badge pour voir comment l'obtenir.</div>
+</section>
+
+<section id="sauv-box">
+  <h2>💾 Sauvegarde</h2>
+  <p>Ta progression est stockée dans ce navigateur. Exporte-la régulièrement : elle est perdue si tu vides les données du site.</p>
+  <div id="sauv-btns">
+    <button id="sauv-export" type="button">Exporter</button>
+    <button id="sauv-import" type="button">Importer</button>
+  </div>
+  <input id="sauv-file" type="file" accept=".json,application/json" hidden>
+  <div id="sauv-msg"></div>
+</section>
+
+<nav id="nav">
+  <button data-tab="jour" class="actif"><span class="ic">🎴</span>Du jour</button>
+  <button data-tab="albums"><span class="ic">📚</span>Mes albums</button>
+  <button data-tab="favoris"><span class="ic">♥</span>Mes favoris</button>
+</nav>
+
+<div id="coll" hidden>
+  <div id="coll-head">
+    <span id="coll-titre">Mes albums</span>
+    <button id="coll-close" aria-label="Fermer">×</button>
+  </div>
+  <div id="stats"></div>
+  <div id="al-prog" hidden></div>
+  <div id="albums"></div>
+  <div id="filtres">
+    <input id="f-q" type="search" placeholder="Rechercher…" aria-label="Rechercher">
+    <select id="f-rar" aria-label="Rareté">
+      <option value="">Toutes raretés</option>
+      <option value="commune">● Commune</option>
+      <option value="rare">◆ Rare</option>
+      <option value="legendaire">★ Légendaire</option>
+    </select>
+    <select id="f-st" aria-label="Statut"></select>
+  </div>
+  <div class="grille" id="coll-grille"></div>
+  <div id="vide" hidden>Aucune carte ne correspond.</div>
+</div>
+
+<div id="viewer" hidden>
+  <button id="v-close" aria-label="Fermer">×</button>
+  <div id="v-stage"></div>
+  <div id="v-nav">
+    <button id="v-prev" aria-label="Carte précédente">‹</button>
+    <span id="v-count"></span>
+    <button id="v-next" aria-label="Carte suivante">›</button>
+  </div>
+</div>
+
+<div id="reveal" hidden>
+  <div id="rv-top"><span id="rv-count"></span><button id="rv-skip">Tout révéler ⏭</button></div>
+  <div id="rv-stage"></div>
+  <div id="rv-hint"></div>
+  <div id="rv-flash"></div>
+</div>
+<div id="enigme" hidden>
+  <div id="en-haut">
+    <div id="en-bar">
+      <button id="en-close" aria-label="Fermer">‹</button>
+      <div id="en-titre">🧩 Énigme</div>
+      <div id="en-stats"></div>
+    </div>
+    <div id="en-mot"></div>
+    <form id="en-form" autocomplete="off">
+      <input id="en-in" type="text" placeholder="Propose un mot…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="send" aria-label="Proposer un mot">
+      <button type="submit">OK</button>
+    </form>
+    <div id="en-msg"></div>
+  </div>
+  <div id="en-res" hidden></div>
+  <div id="en-texte"></div>
+  <div id="en-props"></div>
+  <div id="en-actions">
+    <button id="en-indice" type="button">💡 Indice</button>
+    <button id="en-abandon" type="button">🏳 Abandonner</button>
+  </div>
+</div>
+<div id="confetti"></div>
+<div id="toast"></div>
+
+<script>
+const DEBUG = false;          // true = ignore la limite quotidienne (tests)
+const HEURE_TIRAGE = 12;
+const TZ = 'Europe/Paris';
+const NB = 3;                 // cartes par paquet
+const APERCU = false;          // true = collection entièrement débloquée pour relecture (TEMPORAIRE : repasser à false avant la mise en production)
+const GARANTIE_RARE = 3;      // au moins une carte rare ou mieux tous les N paquets (0 = désactivé)
+const GALLICA_W = 600;        // largeur en px des images Gallica (400 = plus léger, 800 = plus net)
+const POIDS = { commune: 70, rare: 25, legendaire: 5 };
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm = s => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const cleSrc = c => String(c.Source || 'autre').toLowerCase().replace(/[^a-z]/g, '');
+const RARETE = {
+  commune:    {pic: '●', nom: 'Commune'},
+  rare:       {pic: '◆', nom: 'Rare'},
+  legendaire: {pic: '★', nom: 'Légendaire'}
+};
+let busy = false;
+let cartesCourantes = [], vues = new Set(), idx = 0, jeton = 0;
+
+// état issu des tables (rempli par charger)
+let collRows = [], favOK = false, favs = new Set(), vueOK = false, vuesDB = new Set();
+// état de l'écran collection
+let poolC = [], possC = new Set(), tiragesC = [], cleC = '';
+// albums : numéro de vignette par carte, album ouvert (null = étagère)
+let numC = new Map(), albumC = null, modeC = 'albums';   // modeC : 'albums' | 'fav'
+// dernières données chargées (pour l'accueil)
+let poolH = [], tirH = [], cleH = '';
+const albumDe = c => String(c.Album || c.Source || 'autre');
+const cleAlb = c => norm(albumDe(c));
+const ICONE = {wikipedia:'🌍', gallica:'📜', science:'🔬', mot:'💬'};
+function numeroter(pool){
+  const m = new Map(), cpt = new Map();
+  [...pool].sort((a,b) => (a.Numero || 1e9) - (b.Numero || 1e9) || a.id - b.id).forEach(c => {
+    if (c.Numero) return m.set(c.id, c.Numero);
+    const k = cleAlb(c), n = (cpt.get(k) || 0) + 1;
+    cpt.set(k, n); m.set(c.id, n);
+  });
+  return m;
+}
+
+// ---- stockage : pool.json (lecture seule, dans le dépôt) + localStorage (progression du joueur) ----
+const POOL_URL = 'pool.json';
+const CLE_STOCK = 'paquet-du-jour-v1';
+let stock = {tirages: [], collection: [], seq: 1}, poolPromise = null;
+function lireStock(){
+  try{
+    const s = JSON.parse(localStorage.getItem(CLE_STOCK));
+    if (s && Array.isArray(s.tirages) && Array.isArray(s.collection)){
+      s.seq = s.seq || 1 + Math.max(0, ...s.tirages.map(t => t.id || 0), ...s.collection.map(r => r.id || 0));
+      return s;
+    }
+  }catch(e){}
+  return {tirages: [], collection: [], seq: 1};
+}
+function sauverStock(){ localStorage.setItem(CLE_STOCK, JSON.stringify(stock)); }
+function chargerPool(){
+  if (!poolPromise){
+    poolPromise = fetch(POOL_URL, {cache: 'no-cache'})
+      .then(r => { if (!r.ok) throw new Error('pool.json introuvable (HTTP ' + r.status + ')'); return r.json(); })
+      .then(l => l.map(r => { const o = {}; Object.keys(r).forEach(k => { const v = r[k]; o[k] = typeof v === 'string' ? v.trim() : v; }); return o; }))
+      .catch(e => { poolPromise = null; throw e; });
+  }
+  return poolPromise;
+}
+// couche d'écriture (remplace grist.docApi.applyUserActions)
+const db = {
+  maj(ids, champs){
+    const s = new Set(ids);
+    stock.collection.forEach(r => { if (s.has(r.id)) Object.assign(r, champs); });
+    sauverStock();
+  },
+  ajouterCollection(o){
+    const id = stock.seq++;
+    stock.collection.push(Object.assign({id}, o));
+    sauverStock();
+    return id;
+  },
+  ajouterTirage(jour, ids){
+    stock.tirages.push({id: stock.seq++, Jour: jour, Cartes: JSON.stringify(ids)});
+    ids.forEach(cid => stock.collection.push({id: stock.seq++, CarteId: cid, Jour: jour, Favori: false, Vue: false, Resultat: ''}));
+    sauverStock();
+  }
+};
+
+// Jour peut revenir en texte ("2026-10-27") ou en horodatage si la colonne est de type Date
+const normJour = v => typeof v === 'number' ? new Date(v * 1000).toISOString().slice(0, 10) : String(v ?? '');
+const fmtDate = d => new Date(d + 'T12:00:00Z').toLocaleDateString('fr-FR', {day: 'numeric', month: 'long', timeZone: 'UTC'});
+const idsTirage = t => { try{ return JSON.parse(t.Cartes || '[]'); }catch(e){ return []; } };   // [] = jour enregistré sans paquet
+let aVenir = [], totalPool = 0; // aVenir : albums pas encore sortis [{lab, date}], du plus proche au plus lointain ; totalPool : toutes les cartes, sorties ou non
+
+// Heure serveur si possible (en-tête Date), sinon horloge de l'appareil
+async function maintenant(){
+  try{
+    const r = await fetch(location.href, {method:'HEAD', cache:'no-store'});
+    const d = r.headers.get('Date');
+    if (d) return new Date(d);
+  }catch(e){}
+  return new Date();
+}
+function cleJour(d){
+  const p = Object.fromEntries(new Intl.DateTimeFormat('fr-FR',{timeZone:TZ,year:'numeric',month:'2-digit',
+    day:'2-digit',hour:'2-digit',hourCycle:'h23'}).formatToParts(d).map(x => [x.type, x.value]));
+  const t = new Date(Date.UTC(+p.year, +p.month-1, +p.day));
+  if (+p.hour < HEURE_TIRAGE) t.setUTCDate(t.getUTCDate()-1);
+  return t.toISOString().slice(0,10);
+}
+function prochain(d){
+  const h = +new Intl.DateTimeFormat('fr-FR',{timeZone:TZ,hour:'2-digit',hourCycle:'h23'}).format(d);
+  return (h < HEURE_TIRAGE ? "aujourd'hui" : 'demain') + ' à 12h00';
+}
+
+async function charger(){
+  stock = lireStock();
+  const poolBrut = await chargerPool();
+  const collAll = stock.collection.map(r => Object.assign({}, r));
+  // colonne Debut du Pool (Date ou texte AAAA-MM-JJ, facultative) : un album n'existe qu'à partir de sa date de sortie (12h00, heure de Paris)
+  const auj = cleJour(new Date(Date.now() + decalage));
+  const dispo = c => {
+    if (APERCU || !c.Debut) return true;
+    const d = normJour(c.Debut).slice(0, 10);
+    return !/^\d{4}-\d{2}-\d{2}$/.test(d) || d <= auj;
+  };
+  const poolAll = poolBrut.filter(dispo);
+  totalPool = poolBrut.filter(c => !estEnigme(c)).length;
+  const sortis = new Set(poolAll.filter(c => !estEnigme(c)).map(cleAlb));
+  const prochains = new Map();
+  poolBrut.filter(c => !estEnigme(c) && !dispo(c) && !sortis.has(cleAlb(c))).forEach(c => {
+    const d = normJour(c.Debut).slice(0, 10), o = prochains.get(cleAlb(c));
+    if (!o || d < o.date) prochains.set(cleAlb(c), {lab: albumDe(c), date: d});
+  });
+  aVenir = [...prochains.values()].sort((a, b) => a.date.localeCompare(b.date));
+  // énigmes de fin d'album (Source = enigme) : dans le Pool, mais ni tirées, ni comptées, ni numérotées
+  const idE = new Set(poolAll.filter(estEnigme).map(c => c.id));
+  enigmesH = poolAll.filter(c => estEnigme(c) && sortis.has(cleAlb(c)));
+  resOK = true;                                       // sauvegarde des énigmes dans le champ Resultat de la collection locale
+  resEnigme = new Map();
+  collAll.filter(r => idE.has(r.CarteId)).forEach(r => {
+    ligneE.set(r.CarteId, r.id);
+    let d = null; try{ d = JSON.parse(r.Resultat || 'null'); }catch(e){}
+    if (d) resEnigme.set(r.CarteId, d);
+  });
+  const coll = collAll.filter(r => !idE.has(r.CarteId));
+  collRows = coll;
+  favOK = true;
+  favs = new Set(coll.filter(r => r.Favori).map(r => r.CarteId));
+  vueOK = true;
+  vuesDB = new Set(coll.filter(r => r.Vue).map(r => r.CarteId));
+  const poolR = poolAll.filter(c => !idE.has(c.id));
+  numC = numeroter(poolR);
+  const tirR = stock.tirages.map(t => Object.assign({}, t));
+  poolH = poolR; tirH = tirR;
+  return {pool: poolR, tirages: tirR, coll};
+}
+
+function tirer(pool, possedees, force = false){
+  // jamais de doublon : paquet plus petit s'il reste moins de NB cartes, aucun paquet s'il n'en reste plus
+  const cand = pool.filter(c => !possedees.has(c.id));
+  const out = [];
+  while (out.length < NB && cand.length){
+    const w = c => POIDS[c.Rarete] || POIDS.commune;
+    let x = Math.random() * cand.reduce((s,c) => s + w(c), 0), i = 0;
+    for (; i < cand.length; i++){ x -= w(cand[i]); if (x <= 0) break; }
+    out.push(cand.splice(Math.min(i, cand.length-1), 1)[0]);
+  }
+  // garantie : aucune carte rare ou mieux depuis trop longtemps → la dernière carte est remplacée par une rare non possédée
+  if (force && out.length && !out.some(estRare)){
+    const ra = pool.filter(c => estRare(c) && !possedees.has(c.id));
+    if (ra.length){
+      const w = c => POIDS[c.Rarete] || POIDS.commune;
+      let x = Math.random() * ra.reduce((s,c) => s + w(c), 0), k = 0;
+      for (; k < ra.length; k++){ x -= w(ra[k]); if (x <= 0) break; }
+      out[out.length - 1] = ra[Math.min(k, ra.length - 1)];
+    }
+  }
+  return out;
+}
+
+function carteHTML(c){
+  const src = cleSrc(c);
+  const rar = RARETE[c.Rarete] || RARETE.commune;
+  const f = favs.has(c.id);
+  return `<div class="carte r-${esc(c.Rarete || 'commune')} s-${src}" data-id="${c.id}"><div class="in">
+    <div class="dos">?</div>
+    <div class="face">
+      <div class="vis ph">${c.Image ? `<img src="${esc(c.Image)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ''}</div>
+      ${favOK ? `<button class="fav${f ? ' est' : ''}" data-fav="${c.id}" aria-label="Favori" aria-pressed="${f}">${f ? '♥' : '♡'}</button>` : ''}
+      <div class="txt">
+        <small>${numC.has(c.id) ? `<span class="num">N° ${String(numC.get(c.id)).padStart(2,'0')}</span>` : ''}${esc(c.Source)} <span class="rar" title="${rar.nom}" aria-label="${rar.nom}">${rar.pic}</span></small>
+        <h3>${esc(c.Titre)}</h3><p>${esc(c.Extrait)}</p>
+        ${c.Url ? `<a href="${esc(c.Url)}" target="_blank" rel="noopener">Source</a>` : ''}
+      </div>
+    </div></div></div>`;
+}
+
+// Image d'une carte : 1) colonne Image, 2) permalien Gallica (IIIF), 3) miniature Wikipédia.
+// Échec silencieux : le motif du bandeau reste.
+const cacheImg = new Map();
+function urlImage(c){
+  if (c.Image) return Promise.resolve(c.Image);
+  const g = String(c.Url || '').match(/gallica\.bnf\.fr\/ark:\/(\d+)\/([A-Za-z0-9]+)(?:\/f(\d+))?/);
+  if (g) return Promise.resolve(`https://gallica.bnf.fr/iiif/ark:/${g[1]}/${g[2]}/f${g[3] || 1}/full/${GALLICA_W},/0/native.jpg`);
+  if (c.Source !== 'wikipedia' || !c.Url) return Promise.resolve(null);
+  if (!cacheImg.has(c.id)){
+    cacheImg.set(c.id, (async () => {
+      try{
+        const titre = c.Url.split('/wiki/')[1];
+        if (!titre) return null;
+        const r = await fetch('https://fr.wikipedia.org/api/rest_v1/page/summary/' + titre);
+        return (await r.json()).thumbnail?.source || null;
+      }catch(e){ return null; }
+    })());
+  }
+  return cacheImg.get(c.id);
+}
+function poserImage(c){
+  urlImage(c).then(u => {
+    if (!u) return;
+    document.querySelectorAll(`.carte[data-id="${c.id}"] .vis`).forEach(v => {
+      if (v.querySelector('img')) return;
+      const img = new Image();
+      img.alt = ''; img.referrerPolicy = 'no-referrer';
+      img.onload = () => { if (!v.querySelector('img')) v.appendChild(img); };
+      img.src = u;
+    });
+  });
+}
+
+// ---- favoris ----
+function majCoeurs(id){
+  const f = favs.has(id);
+  document.querySelectorAll(`.fav[data-fav="${id}"]`).forEach(b => {
+    b.classList.toggle('est', f);
+    b.textContent = f ? '♥' : '♡';
+    b.setAttribute('aria-pressed', f);
+  });
+}
+function majCompteFav(){
+  const e = $('st-fav');
+  if (e) e.textContent = poolC.filter(c => favs.has(c.id)).length;
+}
+async function basculerFav(id){
+  if (!favOK) return;
+  const ligne = collRows.filter(r => r.CarteId === id);
+  if (!ligne.length) return;
+  const val = !favs.has(id);
+  val ? favs.add(id) : favs.delete(id);
+  ligne.forEach(r => r.Favori = val);
+  majCoeurs(id); majCompteFav();
+  if (!$('coll').hidden && (modeC === 'fav' || $('f-st').value === 'fav')) rendreCollection();
+  try{
+    db.maj(ligne.map(r => r.id), {Favori: val});
+  }catch(e){
+    val ? favs.delete(id) : favs.add(id);             // annulation
+    ligne.forEach(r => r.Favori = !val);
+    majCoeurs(id); majCompteFav();
+    $('info').textContent = 'Erreur favori : ' + e.message;
+  }
+}
+// capture : le clic sur ♥ ne doit ni ouvrir ni retourner la carte
+document.addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('.fav');
+  if (!b) return;
+  e.stopPropagation(); e.preventDefault();
+  basculerFav(+b.dataset.fav);
+}, true);
+
+// ---- visionneuse plein écran ----
+async function persisterVue(id){
+  if (!vueOK) return;
+  const ligne = collRows.filter(r => r.CarteId === id && !r.Vue);
+  if (!ligne.length) return;
+  ligne.forEach(r => r.Vue = true);
+  vuesDB.add(id);
+  try{
+    db.maj(ligne.map(r => r.id), {Vue: true});
+  }catch(e){
+    ligne.forEach(r => r.Vue = false);
+    vuesDB.delete(id);
+    $('info').textContent = 'Erreur : ' + e.message;
+  }
+}
+function marquerVue(c){
+  vues.add(c.id);
+  document.querySelectorAll(`.grille .carte[data-id="${c.id}"]`).forEach(g => g.classList.add('on'));
+  persisterVue(c.id);
+}
+function afficherCarte(dir){
+  const c = cartesCourantes[idx];
+  if (!c) return;
+  const t = ++jeton;
+  const stage = $('v-stage');
+  stage.style.setProperty('--dx', (dir * 40) + 'px');
+  stage.innerHTML = carteHTML(c);
+  const el = stage.firstElementChild;
+  el.classList.add('grande');
+  el.onclick = () => el.classList.toggle('on');
+  poserImage(c);
+  if (vues.has(c.id)) el.classList.add('on');
+  else setTimeout(() => { if (t === jeton){ el.classList.add('on'); marquerVue(c); } }, 450);
+  $('v-count').textContent = `${idx + 1} / ${cartesCourantes.length}`;
+  $('v-prev').disabled = idx === 0;
+  $('v-next').disabled = idx === cartesCourantes.length - 1;
+}
+function ouvrirViewer(i, liste){ if (liste) cartesCourantes = liste; idx = i; $('viewer').hidden = false; afficherCarte(0); }
+function fermerViewer(){ jeton++; $('viewer').hidden = true; $('v-stage').innerHTML = ''; }
+function aller(d){
+  const n = idx + d;
+  if (n < 0 || n >= cartesCourantes.length) return;
+  idx = n; afficherCarte(d);
+}
+$('v-close').onclick = fermerViewer;
+$('v-prev').onclick = () => aller(-1);
+$('v-next').onclick = () => aller(1);
+document.addEventListener('keydown', e => {
+  if ($('viewer').hidden) return;
+  if (e.key === 'ArrowRight') aller(1);
+  else if (e.key === 'ArrowLeft') aller(-1);
+  else if (e.key === 'Escape') fermerViewer();
+});
+let tx = 0, ty = 0;
+$('viewer').addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, {passive: true});
+$('viewer').addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) aller(dx < 0 ? 1 : -1);
+}, {passive: true});
+
+// ---- grille du jour ----
+function montrerCartes(cartes, faceCachee){
+  cartesCourantes = cartes;
+  vues = faceCachee ? new Set() : (vueOK ? new Set(vuesDB) : new Set(cartes.map(c => c.id)));
+  $('app').innerHTML = `<div class="grille">${cartes.map(carteHTML).join('')}</div>`;
+  cartes.forEach(poserImage);
+  document.querySelectorAll('.grille .carte').forEach((el, i) => {
+    if (faceCachee){ el.classList.add('deal'); el.style.animationDelay = (i * 130) + 'ms'; }
+    if (vues.has(cartes[i].id)) el.classList.add('on');
+    el.onclick = () => ouvrirViewer(i, cartes);
+  });
+}
+
+// ---- pochette à déchirer ----
+function initPochette(cle){
+  const p = $('poch'), haut = p.querySelector('.p-haut');
+  let x0 = null, prog = 0, moved = false, fini = false;
+  const set = v => { prog = v; haut.style.transform = `rotate(${v * 38}deg) translate(${v * 6}px,${-v * 14}px)`; };
+  const finir = () => {
+    if (fini) return; fini = true; x0 = null;
+    p.classList.add('dechire');
+    haut.style.transition = 'transform .6s cubic-bezier(.3,.7,.4,1),opacity .6s';
+    haut.style.transform = 'translate(200px,-280px) rotate(85deg)';
+    haut.style.opacity = '0';
+    if (navigator.vibrate) navigator.vibrate(30);
+    setTimeout(() => p.classList.add('sort'), 400);
+    setTimeout(() => ouvrir(cle), 900);
+  };
+  const relacher = () => {
+    if (x0 === null || fini) return;
+    x0 = null;
+    if (!moved) return finir();                      // simple tap = déchirure automatique
+    haut.style.transition = 'transform .3s'; set(0);
+    setTimeout(() => { haut.style.transition = ''; }, 320);
+  };
+  p.onpointerdown = e => { if (fini) return; x0 = e.clientX; moved = false; p.setPointerCapture(e.pointerId); };
+  p.onpointermove = e => {
+    if (x0 === null || fini) return;
+    const d = e.clientX - x0;
+    if (Math.abs(d) > 8) moved = true;
+    set(Math.max(0, Math.min(1, d / (p.offsetWidth * .8))));
+    if (prog >= .95) finir();
+  };
+  p.onpointerup = relacher;
+  p.onpointercancel = relacher;
+}
+
+// ---- règles de jeu : garantie de rareté, albums complets, badges ----
+const estRare = c => c.Rarete === 'rare' || c.Rarete === 'legendaire';
+const vib = p => { try{ navigator.vibrate && navigator.vibrate(p); }catch(e){} };
+let fetes = [];                 // célébrations à annoncer après la révélation
+
+// nombre de paquets consécutifs (les plus récents) sans aucune carte rare ou mieux
+function paquetsSansRare(pool, tirages){
+  const rares = new Set(pool.filter(estRare).map(c => c.id));
+  const tri = [...tirages].sort((a, b) => normJour(b.Jour).localeCompare(normJour(a.Jour)));
+  let n = 0;
+  for (const t of tri){
+    let ids = [];
+    try{ ids = JSON.parse(t.Cartes || '[]'); }catch(e){}
+    if (!ids.length) continue;                           // jour sans paquet (rien à tirer) : ne compte pas
+    if (ids.some(id => rares.has(id))) break;
+    n++;
+  }
+  return n;
+}
+// Map clé d'album → libellé, pour les albums dont toutes les cartes sont possédées
+function albumsComplets(pool, poss){
+  const m = new Map();
+  pool.forEach(c => {
+    const k = cleAlb(c);
+    const o = m.get(k) || {lab: albumDe(c), n: 0, t: 0};
+    o.t++; if (poss.has(c.id)) o.n++;
+    m.set(k, o);
+  });
+  return new Map([...m].filter(([k, o]) => o.t && o.n === o.t).map(([k, o]) => [k, o.lab]));
+}
+function statsJeu(pool, tirages, poss, cle){
+  const cs = pool.filter(c => poss.has(c.id));
+  return {
+    tirages: tirages.length,
+    meilleure: series(tirages, cle).meilleure,
+    nbLeg: cs.filter(c => c.Rarete === 'legendaire').length,
+    nbRare: cs.filter(estRare).length,
+    nbFav: cs.filter(c => favs.has(c.id)).length,
+    nbAlbums: albumsComplets(pool, poss).size,
+    pct: totalPool ? 100 * cs.length / totalPool : 0       // sur toute la collection, albums pas encore sortis compris
+  };
+}
+// Badges calculés à la volée (rien n'est stocké) : modifie seuils et textes ici
+const BADGES = [
+  {id:'premier', ico:'🎴', nom:'Premier paquet',  desc:'Ouvrir ton premier paquet.',                 ok: s => s.tirages >= 1},
+  {id:'serie3',  ico:'🔥', nom:'3 jours de suite', desc:'Ouvrir un paquet 3 jours de suite.',          ok: s => s.meilleure >= 3},
+  {id:'serie7',  ico:'⚡', nom:'7 jours de suite', desc:'Ouvrir un paquet 7 jours de suite.',          ok: s => s.meilleure >= 7},
+  {id:'serie30', ico:'🌟', nom:'30 jours de suite',desc:'Ouvrir un paquet 30 jours de suite.',         ok: s => s.meilleure >= 30},
+  {id:'leg1',    ico:'👑', nom:'Légendaire',       desc:'Obtenir ta première carte légendaire.',       ok: s => s.nbLeg >= 1},
+  {id:'rare10',  ico:'💎', nom:'10 raretés',       desc:'Posséder 10 cartes rares ou légendaires.',    ok: s => s.nbRare >= 10},
+  {id:'fav10',   ico:'💖', nom:'10 favoris',       desc:'Mettre 10 cartes en favori.',                 ok: s => s.nbFav >= 10},
+  {id:'album1',  ico:'🏆', nom:'Album complet',    desc:'Compléter un album en entier.',               ok: s => s.nbAlbums >= 1},
+  {id:'moitie',  ico:'📈', nom:'Mi-parcours',      desc:'Posséder la moitié de la collection.',        ok: s => s.pct >= 50},
+  {id:'tout',    ico:'🌈', nom:'Collection complète', desc:'Posséder toutes les cartes.',              ok: s => s.pct >= 100}
+];
+let badgesCourants = [];
+$('badges').onclick = e => {
+  const b = e.target.closest('[data-b]'); if (!b) return;
+  const o = badgesCourants.find(x => x.id === b.dataset.b); if (!o) return;
+  $('badge-desc').textContent = (b.classList.contains('lock') ? '🔒 ' : '✅ ') + o.nom + ' : ' + o.desc;
+};
+
+// ---- énigme de fin d'album (type Pédantix) ----
+// Une ligne du Pool avec Source = enigme, Album = nom de l'album, Titre = mot ou nom à trouver, Url = article Wikipédia
+// (Extrait, s'il est rempli, remplace le texte de Wikipédia). Débloquée quand l'album est complet.
+// Le résultat est sauvegardé dans Collection, colonne Resultat (type Texte) : une ligne par énigme.
+const ENIGME = {
+  motsMax: 150,        // longueur maximale de l'extrait affiché (en mots)
+  essaisLibres: 15,    // propositions sans pénalité
+  penaliteEssai: 1,    // points perdus par proposition au-delà
+  minutesLibres: 5,    // minutes (temps actif) sans pénalité
+  penaliteMinute: 2,   // points perdus par minute au-delà
+  plafondTemps: 25,    // pénalité de temps maximale
+  coutIndice: 3,       // un indice compte pour N propositions
+  plancher: 5,         // score minimal d'une énigme résolue
+  offerts: true        // révéler d'office les mots-outils (le, de, et…)
+};
+const MOTS_OUTILS = new Set('le la les l un une des de du d et en a au aux est qui que qu dans par pour sur ce se s sa son ses il elle ne n ou y'.split(' '));
+const estEnigme = c => norm(c.Source) === 'enigme';
+const nk = s => norm(s).replace(/œ/g, 'oe').replace(/æ/g, 'ae');
+const fmtT = s => { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+let enigmesH = [], resEnigme = new Map(), resOK = false;
+const memE = new Map(), ligneE = new Map();
+const etatEnigme = id => memE.get(id) || resEnigme.get(id) || null;
+let E = null, tE = null, jetonE = 0, tSauve = null, tAband = null, chaineE = Promise.resolve();
+
+function calcScore(essais, secondes){
+  const pe = Math.max(0, essais - ENIGME.essaisLibres) * ENIGME.penaliteEssai;
+  const pt = Math.min(ENIGME.plafondTemps, Math.max(0, secondes / 60 - ENIGME.minutesLibres) * ENIGME.penaliteMinute);
+  return {score: Math.max(ENIGME.plancher, Math.round(100 - pe - pt)), pe: Math.round(pe), pt: Math.round(pt)};
+}
+function tokeniser(texte){
+  const out = []; let fin = 0;
+  for (const m of texte.matchAll(/[\p{L}\p{N}]+/gu)){
+    if (m.index > fin) out.push({w: false, t: texte.slice(fin, m.index)});
+    out.push({w: true, t: m[0], n: nk(m[0]), l: [...m[0]].length});
+    fin = m.index + m[0].length;
+  }
+  if (fin < texte.length) out.push({w: false, t: texte.slice(fin)});
+  return out;
+}
+function nettoyerTexte(t){
+  t = String(t || '').replace(/\r/g, '')
+    .replace(/\s*\([^()]*(?:\/|[ɐ-˿]|prononc)[^()]*\)/gi, '')   // prononciations (API)
+    .replace(/\[\d+\]/g, '').replace(/[ \t]+/g, ' ').replace(/ +([,.])/g, '$1').replace(/\n{3,}/g, '\n\n').trim();
+  const re = /[\p{L}\p{N}]+/gu; let n = 0, lim = -1, m;
+  while ((m = re.exec(t))){ if (++n > ENIGME.motsMax){ lim = m.index; break; } }
+  if (lim < 0) return t;
+  const tete = t.slice(0, lim), k = Math.max(tete.lastIndexOf('. '), tete.lastIndexOf('.\n'));
+  return k > tete.length * .5 ? tete.slice(0, k + 1) : tete.trimEnd() + '…';
+}
+const cacheTexte = new Map();
+async function texteEnigme(c){
+  if (c.Extrait) return nettoyerTexte(c.Extrait);
+  if (!cacheTexte.has(c.id)){
+    cacheTexte.set(c.id, (async () => {
+      const brut = String(c.Url || '').split('/wiki/')[1];
+      if (!brut) return null;
+      let titre; try{ titre = decodeURIComponent(brut.split(/[#?]/)[0]).replace(/_/g, ' '); }catch(e){ return null; }
+      try{
+        const r = await fetch('https://fr.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&redirects=1&format=json&origin=*&titles=' + encodeURIComponent(titre));
+        const p = Object.values((await r.json()).query.pages)[0];
+        if (p && p.extract) return nettoyerTexte(p.extract);
+      }catch(e){}
+      try{
+        const r = await fetch('https://fr.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(titre.replace(/ /g, '_')));
+        const j = await r.json();
+        if (j.extract) return nettoyerTexte(j.extract);
+      }catch(e){}
+      return null;
+    })());
+  }
+  const t = await cacheTexte.get(c.id);
+  if (!t) cacheTexte.delete(c.id);                      // un échec n'est pas gardé en cache
+  return t;
+}
+
+// vignette N° 31 dans la vue d'un album
+function tuileEnigme(c, debloquee){
+  if (!debloquee) return `<div class="carte verrou enigme"><div class="in"><div class="dos">🔒<small>N° 31 · énigme</small></div></div></div>`;
+  const d = etatEnigme(c.id) || {};
+  const lab = d.f ? (d.a ? '🏳' : d.s + ' %') : (d.m && d.m.length ? '⏳' : '?');
+  return `<div class="carte enigme" data-enigme="${c.id}"><div class="in"><div class="dos">🧩<small>N° 31 · énigme</small><b>${esc(lab)}</b></div></div></div>`;
+}
+// badges d'énigme : un par album, avec le pourcentage de réussite
+function badgesEnigmes(){
+  return enigmesH.map(c => {
+    const d = etatEnigme(c.id) || {}, ok = !!d.f && !d.a;
+    return {id: 'enigme' + c.id, ico: '🧩', nom: 'Énigme ' + albumDe(c), pct: ok ? d.s : null, on: ok,
+      desc: ok ? `« ${c.Titre} » trouvé : ${d.s} % de réussite (${d.e} propositions, ${fmtT(d.t)}).`
+               : `Compléter l'album ${albumDe(c)}, puis résoudre son énigme finale.`};
+  });
+}
+
+const barre = x => { const s = document.createElement('span'); s.className = 'pw m'; s.style.setProperty('--l', x.l); return s; };
+function montrerMot(x, cls){ x.on = true; x.el.className = 'pw r ' + cls; x.el.textContent = x.t; x.el.style.removeProperty('--l'); }
+function reveler(n, cls){
+  (E.idx.get(n) || []).forEach(k => { if (!E.tok[k].on) montrerMot(E.tok[k], cls); });
+  E.tw.forEach(x => { if (x.n === n && !x.on) montrerMot(x, cls); });
+  E.rev.add(n);
+}
+function revelerTout(){
+  E.tok.forEach(x => { if (x.w && !x.on) montrerMot(x, 'vu'); });
+  E.tw.forEach(x => { if (!x.on) montrerMot(x, 'vu'); });
+  $('en-form').hidden = true; $('en-actions').hidden = true;
+}
+function majE(){
+  if (!E) return;
+  $('en-stats').textContent = `✏️ ${E.essais} · ⏱ ${fmtT(E.actif / 1000)}`;
+  $('en-props').innerHTML = E.prop.map(p =>
+    `<span class="pp ${p.nb || p.ti ? 'ok' : 'no'}">${esc(p.t)}${p.nb ? ` <b>×${p.nb}</b>` : ''}${p.ti ? ' 🎯' : ''}${p.indice ? ' 💡' : ''}</span>`).join('');
+}
+function tickE(){
+  if (!E || E.fini) return;
+  if (document.visibilityState === 'visible' && Date.now() - E.last < 60000) E.actif += 1000;   // temps actif : pause si inactif
+  $('en-stats').textContent = `✏️ ${E.essais} · ⏱ ${fmtT(E.actif / 1000)}`;
+}
+
+// sauvegarde : une ligne Collection par énigme, champ Resultat = JSON {m: mots, t: secondes, e: propositions, f: fini, a: abandon, s: score}
+const dataE = e => ({m: e.hist, t: Math.round(e.actif / 1000), e: e.essais, f: e.fini ? 1 : 0, a: e.abandon ? 1 : 0, s: e.score});
+function sauverE(id, d){
+  const json = JSON.stringify(d);
+  chaineE = chaineE.then(async () => {
+    if (!resOK) return;
+    try{
+      if (ligneE.has(id)){
+        db.maj([ligneE.get(id)], {Resultat: json});
+      }else{
+        ligneE.set(id, db.ajouterCollection({CarteId: id, Jour: cleH || cleC, Favori: false, Vue: false, Resultat: json}));
+      }
+    }catch(err){ toast(['Erreur énigme : ' + err.message]); }
+  });
+}
+function sauveMaintenant(){
+  clearTimeout(tSauve);
+  if (!E) return;
+  const d = dataE(E);
+  memE.set(E.id, d);
+  if (!APERCU) sauverE(E.id, d);                        // en mode aperçu, rien n'est écrit dans les tables
+}
+const planSauve = () => { clearTimeout(tSauve); tSauve = setTimeout(sauveMaintenant, 900); };
+
+function proposer(brut, o = {}){
+  if (!E || E.fini) return;
+  const mots = String(brut).match(/[\p{L}\p{N}]+/gu) || [];
+  if (!mots.length) return;
+  document.querySelectorAll('#enigme .neuf').forEach(e => e.classList.remove('neuf'));
+  let neufs = 0, trouves = 0, deja = 0, dernier = null;
+  for (const m of mots){
+    const n = nk(m);
+    if (E.rev.has(n) || E.prop.some(p => p.n === n)){ deja++; continue; }
+    const nb = (E.idx.get(n) || []).length, ti = E.tw.some(x => x.n === n);
+    E.prop.unshift({n, t: m, nb, ti, indice: !!o.indice});
+    E.hist.push((o.indice ? '*' : '') + m);
+    E.essais += o.indice ? ENIGME.coutIndice : 1;
+    reveler(n, o.rejeu ? '' : 'neuf');
+    neufs++; if (nb || ti) trouves++;
+    dernier = {m, nb, ti};
+  }
+  if (o.rejeu) return;
+  let txt;
+  if (!neufs) txt = deja > 1 ? 'Ces mots sont déjà révélés ou proposés.' : 'Déjà révélé ou proposé.';
+  else if (neufs === 1){
+    txt = o.indice ? `💡 Indice : « ${dernier.m} » (${dernier.nb} fois dans le texte)`
+      : dernier.ti ? `🎯 « ${dernier.m} » fait partie du mot mystère !${dernier.nb ? ` (${dernier.nb} fois dans le texte)` : ''}`
+      : dernier.nb ? `✅ « ${dernier.m} » : ${dernier.nb} fois dans le texte`
+      : `❌ « ${dernier.m} » n'apparaît pas dans le texte`;
+  }else txt = `${trouves} mot${trouves > 1 ? 's' : ''} trouvé${trouves > 1 ? 's' : ''} sur ${neufs}`;
+  $('en-msg').textContent = txt;
+  majE();
+  if (neufs) planSauve();
+  if (E.tw.length && E.tw.every(x => E.rev.has(x.n))) victoire();
+}
+function indiceEnigme(){
+  if (!E || E.fini) return;
+  const cands = [...E.idx.keys()].filter(n => !E.rev.has(n) && !E.tw.some(x => x.n === n));
+  if (!cands.length){ $('en-msg').textContent = 'Plus d\'indice possible.'; return; }
+  const longs = cands.filter(n => n.length >= 5), liste = longs.length ? longs : cands;
+  const n = liste[Math.floor(Math.random() * liste.length)];
+  proposer(E.tok[E.idx.get(n)[0]].t, {indice: true});
+}
+function afficherResultat(){
+  const s = E.actif / 1000, k = calcScore(E.essais, s);
+  const lien = E.c.Url ? `<div><a href="${esc(E.c.Url)}" target="_blank" rel="noopener">Lire l'article sur Wikipédia</a></div>` : '';
+  $('en-res').innerHTML = E.abandon
+    ? `<div>🏳 Abandonné. La réponse était : <b>${esc(E.c.Titre)}</b></div>${lien}<button id="en-rejouer" type="button">Rejouer</button>`
+    : `<div class="en-score">${E.score} %</div><div class="barre"><i style="width:${E.score}%"></i></div>
+       <div>🎉 Trouvé : <b>${esc(E.c.Titre)}</b></div>
+       <div class="en-det">${E.essais} propositions · ${fmtT(s)} · pénalités : −${k.pe} (propositions), −${k.pt} (temps)</div>${lien}`;
+  $('en-res').hidden = false;
+  $('en-msg').textContent = ''; $('en-msg').hidden = true;
+  const b = $('en-rejouer');
+  if (b) b.onclick = () => ouvrirEnigme(E.id, true);
+  majE();
+}
+function victoire(){
+  E.fini = true; E.abandon = false;
+  E.score = calcScore(E.essais, E.actif / 1000).score;
+  revelerTout();
+  sauveMaintenant();
+  afficherResultat();
+  confettis(['#f59e0b', '#fde68a', '#3b82f6', '#10b981', '#ffffff'], 70);
+  vib([80, 50, 80]);
+  toast(['🧩 Énigme résolue : ' + E.score + ' %'].concat(!resOK && !APERCU ? ['⚠️ Colonne « Resultat » (Texte) absente de Collection : résultat non sauvegardé'] : []));
+  $('enigme').scrollTop = 0;
+}
+
+async function ouvrirEnigme(id, reset = false){
+  const c = enigmesH.find(x => x.id === id);
+  if (!c) return;
+  const t = ++jetonE;
+  clearInterval(tE); E = null;
+  const st = reset ? {} : (etatEnigme(id) || {});
+  $('enigme').hidden = false; $('enigme').scrollTop = 0;
+  $('en-titre').textContent = '🧩 Énigme · ' + albumDe(c);
+  $('en-stats').textContent = ''; $('en-mot').textContent = ''; $('en-props').textContent = ''; $('en-msg').textContent = ''; $('en-msg').hidden = false;
+  $('en-res').hidden = true; $('en-form').hidden = true; $('en-actions').hidden = true;
+  $('en-texte').textContent = 'Chargement de l\'article…';
+  const texte = await texteEnigme(c);
+  if (t !== jetonE) return;                             // fermée ou remplacée pendant le chargement
+  if (!texte){
+    $('en-texte').textContent = 'Impossible de charger l\'article Wikipédia (réseau bloqué ou page introuvable). ' +
+      'Tu peux aussi coller le texte dans la colonne Extrait de la ligne énigme du Pool.';
+    return;
+  }
+  E = {c, id, tok: tokeniser(texte), tw: tokeniser(c.Titre || '').filter(x => x.w), idx: new Map(), rev: new Set(),
+       prop: [], hist: [], essais: 0, actif: (st.t || 0) * 1000, last: Date.now(), fini: false, abandon: false, score: null};
+  const box = $('en-texte'); box.textContent = '';
+  E.tok.forEach((x, k) => {
+    if (!x.w){ box.appendChild(document.createTextNode(x.t)); return; }
+    x.el = barre(x); box.appendChild(x.el);
+    if (!E.idx.has(x.n)) E.idx.set(x.n, []);
+    E.idx.get(x.n).push(k);
+  });
+  const mot = $('en-mot'), lab = document.createElement('small');
+  lab.textContent = 'Mot mystère'; mot.appendChild(lab);
+  E.tw.forEach(x => { x.el = barre(x); mot.appendChild(x.el); });
+  if (ENIGME.offerts) new Set([...E.idx.keys(), ...E.tw.map(x => x.n)]).forEach(n => { if (MOTS_OUTILS.has(n)) reveler(n, 'off'); });
+  (st.m || []).forEach(w => proposer(String(w).replace(/^\*/, ''), {rejeu: true, indice: String(w)[0] === '*'}));
+  if (st.f){
+    E.fini = true; E.abandon = !!st.a; E.score = st.s;
+    revelerTout(); afficherResultat();
+  }else{
+    $('en-form').hidden = false; $('en-actions').hidden = false;
+    $('en-abandon').textContent = '🏳 Abandonner'; delete $('en-abandon').dataset.sur;
+    majE();
+    if (matchMedia('(pointer:fine)').matches) $('en-in').focus();
+  }
+  tE = setInterval(tickE, 1000);
+}
+function fermerEnigme(){
+  jetonE++; clearInterval(tE); clearTimeout(tAband);
+  if (E && (E.hist.length || E.fini)) sauveMaintenant();
+  E = null;
+  $('enigme').hidden = true;
+  if (!$('coll').hidden) rendreCollection();
+  majAccueil();
+}
+$('en-form').onsubmit = ev => {
+  ev.preventDefault();
+  const v = $('en-in').value; $('en-in').value = '';
+  if (E && !E.fini && v.trim()) proposer(v);
+  $('en-in').focus();
+};
+$('en-close').onclick = fermerEnigme;
+$('en-indice').onclick = indiceEnigme;
+$('en-abandon').onclick = () => {                       // confirmation en deux touches (confirm() est bloqué dans l'iframe Grist)
+  const b = $('en-abandon');
+  if (!E || E.fini) return;
+  if (!b.dataset.sur){
+    b.dataset.sur = '1'; b.textContent = 'Confirmer l\'abandon ?';
+    tAband = setTimeout(() => { delete b.dataset.sur; b.textContent = '🏳 Abandonner'; }, 4000);
+    return;
+  }
+  clearTimeout(tAband);
+  E.fini = true; E.abandon = true; E.score = 0;
+  revelerTout(); sauveMaintenant(); afficherResultat();
+};
+['pointerdown', 'keydown'].forEach(ev => $('enigme').addEventListener(ev, () => { if (E) E.last = Date.now(); }));
+document.addEventListener('keydown', e => { if (!$('enigme').hidden && e.key === 'Escape') fermerEnigme(); });
+
+// ---- compte à rebours jusqu'au prochain paquet ----
+let decalage = 0, tCompte = null;
+function secAvantTirage(d){
+  const p = Object.fromEntries(new Intl.DateTimeFormat('fr-FR',{timeZone:TZ,hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'})
+    .formatToParts(d).map(x => [x.type, x.value]));
+  const s = +p.hour * 3600 + +p.minute * 60 + +p.second;
+  return (HEURE_TIRAGE * 3600 - s + 86400) % 86400 || 86400;
+}
+function lancerCompte(){
+  clearInterval(tCompte);
+  let prev = null;
+  const p2 = n => String(n).padStart(2, '0');
+  const tick = () => {
+    const e = $('compte');
+    if (!e){ clearInterval(tCompte); return; }
+    const s = secAvantTirage(new Date(Date.now() + decalage));
+    if (prev !== null && s > prev + 60){ clearInterval(tCompte); afficher(); return; }   // 12h00 passée : nouveau paquet
+    prev = s;
+    e.textContent = `${p2(Math.floor(s / 3600))}:${p2(Math.floor(s % 3600 / 60))}:${p2(s % 60)}`;
+  };
+  tick();
+  tCompte = setInterval(tick, 1000);
+}
+// message sous le paquet + compte à rebours dans l'en-tête
+function infoCompte(message){
+  $('info').textContent = message;
+  $('top-sub').innerHTML = '⏳ Prochain paquet dans <b id="compte"></b>';
+  lancerCompte();
+}
+
+// ---- confettis et annonces ----
+function confettis(couleurs, n){
+  const cont = $('confetti');
+  for (let k = 0; k < n; k++){
+    const p = document.createElement('i');
+    p.style.cssText = `left:${50 + (Math.random() - .5) * 24}%;top:58%;background:${couleurs[k % couleurs.length]};` +
+      `--cx:${((Math.random() - .5) * 110).toFixed(1)}vw;--cy:${(-(25 + Math.random() * 40)).toFixed(1)}vh;` +
+      `--rot:${Math.round(Math.random() * 720)}deg;animation-delay:${Math.round(Math.random() * 150)}ms`;
+    cont.appendChild(p);
+    setTimeout(() => p.remove(), 2300);
+  }
+}
+let tToast = null;
+function toast(lignes){
+  const t = $('toast');
+  t.innerHTML = lignes.map(l => `<div>${esc(l)}</div>`).join('');
+  t.classList.add('vu');
+  clearTimeout(tToast);
+  tToast = setTimeout(() => t.classList.remove('vu'), 4500);
+}
+
+// ---- révélation du paquet, carte par carte ----
+const ORDRE_RAR = {commune: 0, rare: 1, legendaire: 2};
+let rv = {liste: [], i: 0, etat: 'fini'};       // etat : dos | trem | face | sortie | fini
+function lancerReveal(cartes){
+  // les plus rares en dernier : le suspense monte
+  rv = {liste: [...cartes].sort((a, b) => (ORDRE_RAR[a.Rarete] || 0) - (ORDRE_RAR[b.Rarete] || 0)), i: 0, etat: 'dos'};
+  $('reveal').hidden = false;
+  rvAfficher();
+}
+function rvAfficher(){
+  const c = rv.liste[rv.i];
+  if (!c) return rvFermer();
+  rv.etat = 'dos';
+  const reste = rv.liste.length - rv.i - 1;
+  const derriere = Array.from({length: Math.min(reste, 3)}, (_, k) => {
+    const n = k + 1;
+    return `<div class="rv-behind s-${cleSrc(rv.liste[rv.i + n])}" style="transform:translate(${n * 7}px,${n * 7}px) rotate(${n % 2 ? n : -n}deg)"><div class="dos">?</div></div>`;
+  }).reverse().join('');
+  const stage = $('rv-stage');
+  stage.className = '';
+  stage.innerHTML = derriere + carteHTML(c);
+  const el = stage.querySelector('.carte');
+  el.classList.add('grande', 'neuve');
+  poserImage(c);
+  $('rv-count').textContent = `Carte ${rv.i + 1} / ${rv.liste.length}`;
+  $('rv-hint').textContent = 'Touche la carte pour la retourner';
+}
+function rvRetourner(){
+  const c = rv.liste[rv.i], stage = $('rv-stage');
+  const rar = c.Rarete || 'commune';
+  rv.etat = 'trem';
+  $('rv-hint').textContent = '';
+  const delai = rar === 'legendaire' ? 1200 : rar === 'rare' ? 650 : 0;
+  if (delai) stage.className = rar === 'legendaire' ? 'trem-l' : 'trem-r';
+  setTimeout(() => {
+    if (rv.etat !== 'trem' || rv.liste[rv.i] !== c) return;
+    stage.className = '';
+    stage.querySelector('.carte').classList.add('on');
+    marquerVue(c);
+    if (rar === 'rare'){
+      const f = $('rv-flash'); f.className = ''; void f.offsetWidth; f.className = 'fl-rare';
+      vib(40); confettis(['#3b82f6', '#93c5fd', '#ffffff'], 16);
+    }else if (rar === 'legendaire'){
+      const f = $('rv-flash'); f.className = ''; void f.offsetWidth; f.className = 'fl-leg';
+      vib([60, 40, 140]); confettis(['#f59e0b', '#fde68a', '#ffffff', '#fbbf24'], 45);
+    }
+    rv.etat = 'face';
+    $('rv-hint').textContent = rv.i === rv.liste.length - 1 ? 'Touche pour voir ton paquet' : 'Touche pour la carte suivante';
+  }, delai);
+}
+function rvSuivante(){
+  rv.etat = 'sortie';
+  const el = $('rv-stage').querySelector('.carte');
+  if (el){ el.classList.remove('neuve'); el.classList.add('sortie'); }
+  setTimeout(() => { if (rv.etat !== 'sortie') return; rv.i++; rvAfficher(); }, 240);
+}
+function rvFermer(){
+  rv.etat = 'fini';
+  $('reveal').hidden = true;
+  $('rv-stage').innerHTML = ''; $('rv-stage').className = '';
+  $('rv-flash').className = '';
+  if (fetes.length){
+    toast(fetes);
+    confettis(['#f59e0b', '#fde68a', '#3b82f6', '#e11d48', '#10b981', '#ffffff'], 80);
+    vib([80, 50, 80]);
+    fetes = [];
+  }
+  infoCompte('Paquet ouvert ! Touche une carte pour la revoir');
+  majAccueil();
+}
+$('rv-stage').onclick = () => {
+  if (rv.etat === 'dos') rvRetourner();
+  else if (rv.etat === 'face') rvSuivante();
+};
+$('rv-skip').onclick = () => {
+  rv.liste.forEach(c => { if (!vues.has(c.id)) marquerVue(c); });
+  rvFermer();
+};
+document.addEventListener('keydown', e => {
+  if ($('reveal').hidden) return;
+  if (e.key === 'Escape') $('rv-skip').click();
+  else if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowRight'){ e.preventDefault(); $('rv-stage').click(); }
+});
+
+async function ouvrir(cle){
+  if (busy) return; busy = true;
+  try{
+    const {pool, tirages, coll} = await charger();       // revérification juste avant écriture
+    if (!DEBUG && tirages.some(t => normJour(t.Jour) === cle && idsTirage(t).length)) { busy = false; return afficher(); }
+    const force = GARANTIE_RARE > 0 && paquetsSansRare(pool, tirages) >= GARANTIE_RARE - 1;
+    const cartes = tirer(pool, new Set(coll.map(c => c.CarteId)), force);
+    if (!cartes.length){ $('info').textContent = 'Aucune nouvelle carte pour le moment.'; return; }
+    const ids = cartes.map(c => c.id);
+    const jour = DEBUG ? cle + '-' + Date.now() : cle;
+    // célébrations à annoncer après la révélation : albums complétés et badges débloqués
+    const poss0 = new Set(coll.map(c => c.CarteId)), poss1 = new Set([...poss0, ...ids]);
+    const alb0 = albumsComplets(pool, poss0);
+    fetes = [...albumsComplets(pool, poss1)].filter(([k]) => !alb0.has(k)).map(([k, l]) => '🏆 Album complet : ' + l);
+    const s0 = statsJeu(pool, tirages, poss0, cle);
+    const s1 = statsJeu(pool, tirages.concat([{Jour: jour}]), poss1, cle);
+    BADGES.filter(b => b.ok(s1) && !b.ok(s0)).forEach(b => fetes.push(`${b.ico} Badge : ${b.nom}`));
+    db.ajouterTirage(jour, ids);
+    await charger();                                     // recharge collRows pour pouvoir mettre en favori
+    montrerCartes(cartes, true);
+    majAccueil();
+    $('info').textContent = '';
+    lancerReveal(cartes);
+  }catch(e){ $('info').textContent = 'Erreur : ' + e.message; }
+  finally{ busy = false; }
+}
+
+async function afficher(){
+  const now = await maintenant();
+  const cle = cleJour(now);
+  decalage = now.getTime() - Date.now();               // écart horloge appareil / serveur, pour le compte à rebours
+  clearInterval(tCompte);
+  const {pool, tirages, coll} = await charger();
+  cleH = cle; majAccueil();
+  const deja = tirages.find(t => normJour(t.Jour) === cle && idsTirage(t).length);   // vrai paquet du jour
+  const poss = new Set(coll.map(r => r.CarteId));
+  const restants = pool.filter(c => !poss.has(c.id)).length;
+  if (deja){
+    montrerCartes(idsTirage(deja).map(id => pool.find(c => c.id === id)).filter(Boolean), false);
+    infoCompte('Paquet du jour déjà ouvert');
+  }else if (!restants){                                  // plus aucune carte à découvrir : pas de paquet
+    // le jour est tout de même enregistré (Cartes = []) pour que la série de jours consécutifs continue
+    if (!tirages.some(t => normJour(t.Jour) === cle)){
+      try{
+        db.ajouterTirage(cle, []);
+        await charger(); majAccueil();
+      }catch(e){ $('info').textContent = 'Erreur : ' + e.message; }
+    }
+    const nx = aVenir[0];
+    $('app').innerHTML = `<div class="pochette-wrap"><div style="font-size:64px">🎉</div>
+      <div class="p-hint" style="text-align:center">Tu as toutes les cartes disponibles !<br>${nx ? 'Prochain album : ' + esc(fmtDate(nx.date)) : 'De nouveaux albums arrivent bientôt.'}</div></div>`;
+    $('info').textContent = '';
+    $('top-sub').textContent = nx ? 'Prochain album : ' + fmtDate(nx.date) : 'Collection à jour';
+  }else{
+    $('app').innerHTML = `<div class="pochette-wrap"><div class="pochette" id="poch">
+      <div class="p-peek"></div>
+      <div class="p-haut"></div>
+      <div class="p-guide"><span>✂️</span></div>
+      <div class="p-corps"><div class="logo">🎴</div><b>PAQUET DU JOUR</b><small>${Math.min(NB, restants)} carte${Math.min(NB, restants) > 1 ? 's' : ''}</small></div>
+    </div><div class="p-hint">Fais glisser pour déchirer →</div></div>`;
+    initPochette(cle);
+    $('info').textContent = '';
+    $('top-sub').textContent = 'Ton paquet du jour t\'attend !';
+  }
+}
+
+// ---- collection : statistiques ----
+function series(tirages, cle){
+  const JOUR = 86400000;
+  const ms = j => Date.parse(j + 'T00:00:00Z');
+  const jours = [...new Set(tirages.map(t => normJour(t.Jour).slice(0, 10)))]
+    .filter(j => /^\d{4}-\d{2}-\d{2}$/.test(j)).sort();
+  let meilleure = 0, run = 0, prev = null;
+  for (const j of jours){
+    run = (prev !== null && ms(j) - prev === JOUR) ? run + 1 : 1;
+    meilleure = Math.max(meilleure, run);
+    prev = ms(j);
+  }
+  const set = new Set(jours);
+  let courante = 0, t = ms(cle);
+  if (!set.has(cle)) t -= JOUR;                          // paquet du jour pas encore ouvert : la série n'est pas rompue
+  while (set.has(new Date(t).toISOString().slice(0, 10))){ courante++; t -= JOUR; }
+  return {courante, meilleure};
+}
+function rendreStats(){
+  const tot = poolC.length;
+  const n = poolC.filter(c => possC.has(c.id)).length;
+  const pct = tot ? Math.round(100 * n / tot) : 0;
+  const {courante, meilleure} = series(tiragesC, cleC);
+  const j = k => k + ' jour' + (k > 1 ? 's' : '');
+  const ligne = o => `<div class="st-l"><span>${esc(o.lab)}</span><div class="barre"><i style="width:${o.t ? Math.round(100 * o.n / o.t) : 0}%"></i></div><span>${o.n} / ${o.t}</span></div>`;
+
+  const m = new Map();
+  poolC.forEach(c => {
+    const k = cleSrc(c);
+    const o = m.get(k) || {lab: c.Source || 'autre', n: 0, t: 0};
+    o.t++; if (possC.has(c.id)) o.n++;
+    m.set(k, o);
+  });
+  const rars = Object.keys(RARETE).map(k => {
+    const cs = poolC.filter(c => (c.Rarete || 'commune') === k);
+    return {lab: RARETE[k].pic + ' ' + RARETE[k].nom, t: cs.length, n: cs.filter(c => possC.has(c.id)).length};
+  }).filter(o => o.t);
+
+  $('coll-titre').textContent = 'Mes albums';
+  $('stats').innerHTML = `
+    ${APERCU ? '<div style="color:#b45309;font-weight:700;margin-bottom:6px">👁 Mode aperçu : toutes les cartes sont affichées</div>' : ''}
+    <div id="st-top"><span>${n} / ${tot} cartes</span><span>${pct} %</span></div>
+    <div class="barre"><i style="width:${pct}%"></i></div>
+    <div id="st-serie">🔥 Série : ${j(courante)} · Meilleure : ${j(meilleure)}${favOK ? ` · ♥ <span id="st-fav">${poolC.filter(c => favs.has(c.id)).length}</span>` : ''}</div>
+    <details><summary>Détail par source et rareté</summary>
+      <div class="st-h">Sources</div>${[...m.values()].map(ligne).join('')}
+      <div class="st-h">Raretés</div>${rars.map(ligne).join('')}
+    </details>`;
+}
+
+// ---- collection : étagère d'albums puis vignettes d'un album ----
+function rendreEtagere(){
+  const m = new Map();
+  poolC.forEach(c => {
+    const k = cleAlb(c);
+    const o = m.get(k) || {k, lab: albumDe(c), src: cleSrc(c), n: 0, t: 0};
+    o.t++; if (possC.has(c.id)) o.n++;
+    m.set(k, o);
+  });
+  const nx = aVenir[0];                                  // prochain album : silhouette verrouillée, sans révéler son thème
+  $('albums').innerHTML = [...m.values()].map(o => {
+    const pct = o.t ? Math.round(100 * o.n / o.t) : 0, ok = o.t && o.n === o.t;
+    return `<button class="album s-${o.src}" data-alb="${esc(o.k)}">
+      <div class="al-couv"><span class="al-ico">${ICONE[o.src] || '📘'}</span><b>${esc(o.lab)}</b><small>Album</small>${ok ? '<i class="al-ok">COMPLET</i>' : ''}</div>
+      <div class="barre"><i style="width:${pct}%"></i></div><span class="al-n">${o.n} / ${o.t}</span></button>`;
+  }).join('') + (nx ? `<div class="album a-venir"><div class="al-couv"><span class="al-ico">🔒</span><b>Prochain album</b><small>${esc(fmtDate(nx.date))}</small></div>
+      <div class="barre"><i style="width:0"></i></div><span class="al-n">à découvrir</span></div>` : '');
+}
+
+function rendreCollection(){
+  const fav = modeC === 'fav';
+  const dans = fav || albumC !== null;
+  $('albums').hidden = dans; $('stats').hidden = dans;
+  $('filtres').hidden = !dans; $('coll-grille').hidden = !dans; $('al-prog').hidden = !dans;
+  $('coll-close').textContent = albumC !== null && !fav ? '‹' : '×';
+  $('f-st').hidden = fav;
+  if (!dans){
+    $('coll-titre').textContent = 'Mes albums';
+    $('vide').hidden = true;
+    return rendreEtagere();
+  }
+  const liste = fav
+    ? poolC.filter(c => possC.has(c.id) && favs.has(c.id))
+        .sort((a,b) => cleAlb(a).localeCompare(cleAlb(b)) || numC.get(a.id) - numC.get(b.id))
+    : poolC.filter(c => cleAlb(c) === albumC).sort((a,b) => numC.get(a.id) - numC.get(b.id));
+  const nP = liste.filter(c => possC.has(c.id)).length;
+  const pct = liste.length ? Math.round(100 * nP / liste.length) : 0;
+  const enig = fav ? null : enigmesH.find(c => cleAlb(c) === albumC);   // énigme N° 31 de cet album, s'il y en a une
+  const enigDeb = !!enig && liste.length > 0 && nP === liste.length;
+  $('coll-titre').textContent = fav ? '♥ Mes favoris' : (liste.length ? albumDe(liste[0]) : '');
+  $('al-prog').innerHTML = `<div id="st-top"><span>${nP} / ${liste.length} vignettes</span><span>${pct} %</span></div>
+    <div class="barre"><i style="width:${pct}%"></i></div>${liste.length && nP === liste.length ? `<div style="margin-top:8px">🏆 Album complet !${enigDeb ? ' · 🧩 Énigme N° 31 débloquée' : ''}</div>` : ''}`;
+
+  if (fav) $('al-prog').innerHTML = `<div id="st-top"><span>♥ ${liste.length} favori${liste.length > 1 ? 's' : ''}</span><span>sur ${possC.size} cartes</span></div>`;
+  const q = norm($('f-q').value.trim());
+  const rar = $('f-rar').value, st = fav ? '' : $('f-st').value;
+  const owned = [], html = [];
+  liste.forEach(c => {
+    const n = String(numC.get(c.id)).padStart(2, '0');
+    if (possC.has(c.id)){
+      if (st === 'manq') return;
+      if (st === 'fav' && !favs.has(c.id)) return;
+      if (rar && (c.Rarete || 'commune') !== rar) return;
+      if (q && !norm((c.Titre || '') + ' ' + (c.Extrait || '')).includes(q)) return;
+      owned.push(c); html.push(carteHTML(c));
+    }else{
+      // une carte non découverte ne doit pas révéler sa rareté ni son texte : on la masque dès qu'un filtre les concerne
+      if (st === 'poss' || st === 'fav' || rar || q) return;
+      html.push(`<div class="carte verrou s-${cleSrc(c)}"><div class="in"><div class="dos">N° ${n}</div></div></div>`);
+    }
+  });
+  if (enig && !st && !rar && !q) html.push(tuileEnigme(enig, enigDeb));   // 31e vignette (masquée dès qu'un filtre est actif)
+  const g = $('coll-grille');
+  g.innerHTML = html.join('');
+  g.querySelectorAll('[data-enigme]').forEach(el => { el.onclick = () => ouvrirEnigme(+el.dataset.enigme); });
+  $('vide').textContent = fav
+    ? (favOK ? 'Aucun favori pour l\'instant : touche le ♥ d\'une carte.' : 'La colonne Favori (Bascule) est absente de la table Collection.')
+    : 'Aucune carte ne correspond.';
+  $('vide').hidden = html.length > 0;
+  if (!vueOK) owned.forEach(c => vues.add(c.id));      // sans colonne Vue : tout est retourné
+  owned.forEach(poserImage);
+  g.querySelectorAll('.carte[data-id]').forEach((el, i) => {
+    if (vues.has(owned[i].id)) el.classList.add('on');
+    el.onclick = () => ouvrirViewer(i, owned);
+  });
+}
+
+async function ouvrirCollection(mode = 'albums'){
+  try{
+    const now = await maintenant();
+    const {pool, tirages, coll} = await charger();
+    poolC = pool; tiragesC = tirages; cleC = cleJour(now);
+    possC = APERCU ? new Set(pool.map(c => c.id)) : new Set(coll.map(c => c.CarteId));
+    if (APERCU) vues = new Set(pool.map(c => c.id));
+    else if (vueOK) vues = new Set(vuesDB);
+    albumC = null; modeC = mode;
+
+    const fSt = $('f-st'), vSt = fSt.value;
+    fSt.innerHTML = '<option value="">Toutes</option><option value="poss">Possédées</option><option value="manq">À découvrir</option>' +
+      (favOK ? '<option value="fav">♥ Favoris</option>' : '');
+    fSt.value = vSt;
+
+    rendreStats();
+    rendreCollection();
+    $('coll').hidden = false;
+  }catch(e){ $('info').textContent = 'Erreur : ' + e.message; }
+}
+
+// ---- accueil & navigation par onglets ----
+function majAccueil(){
+  const tot = poolH.length;
+  const idsPool = new Set(poolH.map(c => c.id));         // ignore les cartes supprimées du Pool
+  const n = [...new Set(collRows.map(r => r.CarteId))].filter(id => idsPool.has(id)).length;
+  const nf = poolH.filter(c => favs.has(c.id)).length;
+  const s = series(tirH, cleH).courante;
+  $('top-chips').innerHTML = `<span class="chip">🔥 ${s} j</span><span class="chip">🎴 ${n}/${tot}</span>`;
+  $('t-alb-n').textContent = `${n} / ${tot} cartes`;
+  $('t-alb-b').style.width = (tot ? Math.round(100 * n / tot) : 0) + '%';
+  $('t-fav-n').textContent = favOK ? `${nf} favori${nf > 1 ? 's' : ''}` : 'indisponible';
+  const sj = statsJeu(poolH, tirH, new Set(collRows.map(r => r.CarteId)), cleH);
+  const tous = BADGES.map(b => ({...b, on: b.ok(sj)})).concat(badgesEnigmes());
+  badgesCourants = tous;
+  $('badges-n').textContent = `${tous.filter(b => b.on).length} / ${tous.length}`;
+  $('badges').innerHTML = tous.map(b =>
+    `<button class="badge ${b.on ? 'ok' : 'lock'}" data-b="${esc(b.id)}"><i>${b.ico}</i>${esc(b.nom)}${b.pct != null ? `<b>${b.pct} %</b>` : ''}</button>`).join('');
+}
+function majOnglet(t){
+  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('actif', b.dataset.tab === t));
+}
+function onglet(t){
+  majOnglet(t);
+  if (t === 'jour'){ $('coll').hidden = true; majAccueil(); window.scrollTo(0, 0); }
+  else ouvrirCollection(t === 'favoris' ? 'fav' : 'albums');
+}
+document.querySelectorAll('[data-tab]').forEach(b => { b.onclick = () => onglet(b.dataset.tab); });
+$('coll-close').onclick = () => {
+  if (albumC !== null && modeC === 'albums'){ albumC = null; rendreCollection(); $('coll').scrollTop = 0; }
+  else onglet('jour');
+};
+$('f-q').oninput = rendreCollection;
+['f-rar', 'f-st'].forEach(id => { $(id).onchange = rendreCollection; });
+$('albums').onclick = e => {
+  const b = e.target.closest('[data-alb]'); if (!b) return;
+  albumC = b.dataset.alb;
+  $('f-q').value = ''; $('f-rar').value = ''; $('f-st').value = '';
+  rendreCollection(); $('coll').scrollTop = 0;
+};
+
+// ---- sauvegarde : export / import de la progression ----
+const msgSauv = t => { $('sauv-msg').textContent = t; };
+$('sauv-export').onclick = () => {
+  try{
+    stock = lireStock();
+    const blob = new Blob([JSON.stringify({version: 1, date: new Date().toISOString(), stock}, null, 1)], {type: 'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'paquet-du-jour-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    msgSauv('Sauvegarde exportée : ' + stock.collection.length + ' lignes de collection.');
+  }catch(e){ msgSauv('Erreur export : ' + e.message); }
+};
+$('sauv-import').onclick = () => $('sauv-file').click();
+$('sauv-file').onchange = async ev => {
+  const f = ev.target.files[0]; ev.target.value = '';
+  if (!f) return;
+  try{
+    const j = JSON.parse(await f.text());
+    const s = j && j.stock;
+    if (!s || !Array.isArray(s.tirages) || !Array.isArray(s.collection)) throw new Error('fichier de sauvegarde invalide');
+    if (!confirm('Remplacer la progression actuelle par cette sauvegarde (' + s.collection.length + ' lignes) ?')) return;
+    stock = {tirages: s.tirages, collection: s.collection, seq: s.seq || 1};
+    lireStockDepuis(stock);
+    sauverStock();
+    msgSauv('Sauvegarde importée.');
+    await afficher();
+    onglet('jour');
+  }catch(e){ msgSauv('Erreur import : ' + e.message); }
+};
+// recalcule le compteur d'identifiants d'une sauvegarde importée
+function lireStockDepuis(s){
+  s.seq = Math.max(s.seq || 1, 1 + Math.max(0, ...s.tirages.map(t => t.id || 0), ...s.collection.map(r => r.id || 0)));
+  return s;
+}
+
+try{ navigator.storage && navigator.storage.persist && navigator.storage.persist(); }catch(e){}   // demande de ne pas effacer le stockage
+majOnglet('jour');
+afficher().catch(e => { $('info').textContent = 'Erreur : ' + e.message; });
+</script>
+</body>
+</html>
