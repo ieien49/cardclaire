@@ -94,7 +94,7 @@
   .dos{display:flex;align-items:center;justify-content:center;font-size:48px;color:rgba(255,255,255,.85)}
   .dos::after{content:'';position:absolute;inset:8px;border:1px solid rgba(255,255,255,.35);border-radius:8px}
   .dos{flex-direction:column;gap:8px}
-  .dos small{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;text-align:center;padding:0 14px;line-height:1.25;z-index:1}
+  .dos small{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;text-align:center;padding:0 14px;line-height:1.25;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 
   /* recto : visuel en haut, texte en dessous */
   .face{transform:rotateY(180deg);background:#fff;padding:0;overflow:hidden;border:3px solid #bbb;font-size:13px;display:flex;flex-direction:column}
