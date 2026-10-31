@@ -307,7 +307,8 @@
   <p>Ta progression est stockée dans ce navigateur. Exporte-la régulièrement : elle est perdue si tu vides les données du site.</p>
   <div id="sauv-btns">
     <button id="sauv-export" type="button">Exporter</button>
-    <button id="sauv-import" type="button">Importer</button>
+        <button id="sauv-import" type="button">Importer</button>
+    <button id="sauv-reset" type="button" style="background:#b91c1c">Réinitialiser</button>
   </div>
   <input id="sauv-file" type="file" accept=".json,application/json" hidden>
   <div id="sauv-msg"></div>
@@ -1523,6 +1524,15 @@ function lireStockDepuis(s){
   s.seq = Math.max(s.seq || 1, 1 + Math.max(0, ...s.tirages.map(t => t.id || 0), ...s.collection.map(r => r.id || 0)));
   return s;
 }
+
+$('sauv-reset').onclick = async () => {
+  if (!confirm('Effacer toute la progression (cartes, favoris, énigmes) ? Pense à exporter avant.')) return;
+  try{ localStorage.removeItem(CLE_STOCK); }catch(e){}
+  stock = {tirages: [], collection: [], seq: 1};
+  msgSauv('Progression réinitialisée.');
+  await afficher();
+  onglet('jour');
+};
 
 try{ navigator.storage && navigator.storage.persist && navigator.storage.persist(); }catch(e){}   // demande de ne pas effacer le stockage
 majOnglet('jour');
