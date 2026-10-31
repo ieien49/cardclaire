@@ -92,6 +92,8 @@
   .s-mot .dos,.s-mot .ph,.s-mot .al-couv{background:var(--p-rose),linear-gradient(135deg,#c47a2c,#7a4310)}
   .dos{display:flex;align-items:center;justify-content:center;font-size:48px;color:rgba(255,255,255,.85)}
   .dos::after{content:'';position:absolute;inset:8px;border:1px solid rgba(255,255,255,.35);border-radius:8px}
+  .dos{flex-direction:column;gap:8px}
+  .dos small{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;text-align:center;padding:0 14px;line-height:1.25;z-index:1}
 
   /* recto : visuel en haut, texte en dessous */
   .face{transform:rotateY(180deg);background:#fff;padding:0;overflow:hidden;border:3px solid #bbb;font-size:13px;display:flex;flex-direction:column}
@@ -569,7 +571,7 @@ function carteHTML(c){
   const rar = RARETE[c.Rarete] || RARETE.commune;
   const f = favs.has(c.id);
   return `<div class="carte r-${esc(c.Rarete || 'commune')} s-${src}" data-id="${c.id}"><div class="in">
-    <div class="dos">?</div>
+    <div class="dos">?<small>${esc(albumDe(c))}</small></div>
     <div class="face">
       <div class="vis ph">${c.Image ? `<img src="${esc(c.Image)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ''}</div>
       ${favOK ? `<button class="fav${f ? ' est' : ''}" data-fav="${c.id}" aria-label="Favori" aria-pressed="${f}">${f ? '♥' : '♡'}</button>` : ''}
