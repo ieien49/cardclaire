@@ -1528,7 +1528,10 @@ function lireStockDepuis(s){
 }
 
 try{ navigator.storage && navigator.storage.persist && navigator.storage.persist(); }catch(e){}   // demande de ne pas effacer le stockage
-if (TEST) document.body.insertAdjacentHTML('afterbegin', '<div style="background:#b45309;color:#fff;text-align:center;padding:6px 10px;font-size:13px;font-weight:700;border-radius:8px;margin-bottom:8px">🧪 Mode test : progression séparée, tirages illimités, albums à venir débloqués</div>');
+if (TEST){
+  document.body.insertAdjacentHTML('afterbegin', '<div style="background:#b45309;color:#fff;text-align:center;padding:6px 10px;font-size:13px;font-weight:700;border-radius:8px;margin-bottom:8px">🧪 Mode test : progression séparée, tirages illimités, albums à venir débloqués <button id="test-nouveau" type="button" style="display:block;margin:6px auto 0;border:0;border-radius:8px;padding:7px 12px;background:#fff;color:#b45309;font:inherit;font-weight:700;cursor:pointer">🎴 Nouveau tirage</button></div>');
+  $('test-nouveau').onclick = () => { onglet('jour'); afficher().catch(e => { $('info').textContent = 'Erreur : ' + e.message; }); };
+}
 majOnglet('jour');
 afficher().catch(e => { $('info').textContent = 'Erreur : ' + e.message; });
 </script>
