@@ -44,7 +44,11 @@
     border-top:1px solid #ddd;padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
   #nav button{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;
     color:#888;font:inherit;font-size:11px;font-weight:600;padding:4px 0;cursor:pointer;-webkit-tap-highlight-color:transparent}
-  #nav .ic{font-size:22px;line-height:1;transition:transform .2s}
+  #nav .ic{display:flex;height:24px;line-height:1;transition:transform .2s}
+  #nav .ic svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;transition:stroke-width .2s}
+  #nav .ic svg .fond{fill:#fff}
+  #nav button.actif .ic svg{stroke-width:2.1}
+  #nav button[data-tab="favoris"].actif .ic svg{fill:currentColor}
   #nav button.actif{color:#3b5b92}
   #nav button.actif .ic{transform:translateY(-3px) scale(1.15)}
   #nav button.actif::before{content:'';position:absolute;top:-7px;width:28px;height:3px;border-radius:0 0 3px 3px;background:#3b5b92}
@@ -319,9 +323,9 @@
 </section>
 
 <nav id="nav">
-  <button data-tab="jour" class="actif"><span class="ic">🎴</span>Du jour</button>
-  <button data-tab="albums"><span class="ic">📚</span>Mes albums</button>
-  <button data-tab="favoris"><span class="ic">♥</span>Mes favoris</button>
+  <button data-tab="jour" class="actif"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="11" height="15" rx="2" transform="rotate(-9 9 12.5)"/><rect class="fond" x="9.5" y="4" width="11" height="15" rx="2"/><path d="M15 9.2l.9 1.9 2.1.3-1.5 1.5.4 2.1-1.9-1-1.9 1 .4-2.1-1.5-1.5 2.1-.3z"/></svg></span>Du jour</button>
+  <button data-tab="albums"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9.5 3v18"/><path d="M13 8.5h3.5M13 12h3.5"/></svg></span>Mes albums</button>
+  <button data-tab="favoris"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.8C5 16.4 2.6 12.7 2.6 9.2 2.6 6.3 4.8 4.2 7.4 4.2c1.8 0 3.4 1 4.6 2.8 1.2-1.8 2.8-2.8 4.6-2.8 2.6 0 4.8 2.1 4.8 5 0 3.5-2.4 7.2-9.4 11.6z"/></svg></span>Mes favoris</button>
 </nav>
 
 <div id="coll" hidden>
