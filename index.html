@@ -865,6 +865,27 @@ function paquetsSansRare(pool, tirages){
   }
   return n;
 }
+// Limite le tirage aux NB_ACTIFS albums non terminés les plus anciens (par date Debut, puis par id)
+const NB_ACTIFS = 3;
+function poolActif(pool, poss){
+  const m = new Map();
+  pool.forEach(c => {
+    const k = cleAlb(c), d = normJour(c.Debut).slice(0, 10);
+    const o = m.get(k) || {k, d, id: c.id, rest: 0};
+    if (d < o.d) o.d = d;
+    if (c.id < o.id) o.id = c.id;
+    if (!poss.has(c.id)) o.rest++;
+    m.set(k, o);
+  });
+  const ordre = [...m.values()].filter(o => o.rest)
+    .sort((a, b) => a.d.localeCompare(b.d) || a.id - b.id);
+  const ok = new Set(); let cartes = 0;
+  for (const o of ordre){
+    if (ok.size >= NB_ACTIFS && cartes >= NB) break;   // 3 albums ET assez de cartes pour un paquet complet
+    ok.add(o.k); cartes += o.rest;
+  }
+  return pool.filter(c => ok.has(cleAlb(c)));
+}  
 // Map clé d'album → libellé, pour les albums dont toutes les cartes sont possédées
 function albumsComplets(pool, poss){
   const m = new Map();
@@ -1334,7 +1355,8 @@ async function ouvrir(cle){
     const {pool, tirages, coll} = await charger();       // revérification juste avant écriture
     if (!DEBUG && tirages.some(t => normJour(t.Jour) === cle && idsTirage(t).length)) { busy = false; return afficher(); }
     const force = GARANTIE_RARE > 0 && paquetsSansRare(pool, tirages) >= GARANTIE_RARE - 1;
-    const cartes = tirer(pool, new Set(coll.map(c => c.CarteId)), force);
+    const possA = new Set(coll.map(c => c.CarteId));
+    const cartes = tirer(poolActif(pool, possA), possA, force);
     if (!cartes.length){ $('info').textContent = 'Aucune nouvelle carte pour le moment.'; return; }
     const ids = cartes.map(c => c.id);
     const jour = DEBUG ? cle + '-' + Date.now() : cle;
