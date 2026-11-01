@@ -108,9 +108,8 @@
   .vis img{display:block;width:100%;height:100%;object-fit:cover}
   .txt{flex:1;overflow:auto;padding:8px 10px}
   .txt small{color:#666;text-transform:uppercase;font-size:10px}
-  .rar{font-size:15px;margin-left:4px;color:#999;vertical-align:-1px}
-  .r-rare .rar{color:#3b82f6}
-  .r-legendaire .rar{color:#f59e0b}
+  .rar{margin-left:4px;vertical-align:-3px}
+  .pic{display:inline-block;width:16px;height:16px;flex:none}
   .txt h3{margin:4px 0;font-size:15px}
   .txt p{margin:4px 0}
 
@@ -278,7 +277,7 @@
   #st-hero .ring-w{width:84px;height:84px}
   #st-hero ul{list-style:none;margin:0;padding:0;font-size:13px;color:#555;display:grid;gap:4px}
   #st-hero li b{font-size:15px;color:#222}
-  .st-l span:first-child{text-transform:capitalize}
+  .st-l span:first-child{text-transform:capitalize;display:inline-flex;align-items:center;gap:5px}
   .leg{display:flex;gap:6px 12px;flex-wrap:wrap;margin-top:12px;font-size:11px;color:#777}
   .leg span{display:inline-flex;align-items:center;gap:4px}
   .leg svg{width:12px;height:12px}
@@ -375,9 +374,9 @@
     <input id="f-q" type="search" placeholder="Rechercher…" aria-label="Rechercher">
     <select id="f-rar" aria-label="Rareté">
       <option value="">Toutes raretés</option>
-      <option value="commune">● Commune</option>
-      <option value="rare">◆ Rare</option>
-      <option value="legendaire">★ Légendaire</option>
+      <option value="commune">Commune</option>
+      <option value="rare">Rare</option>
+      <option value="legendaire">Légendaire</option>
     </select>
     <select id="f-st" aria-label="Statut"></select>
   </div>
@@ -440,10 +439,16 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm = s => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 const cleSrc = c => String(c.Source || 'autre').toLowerCase().replace(/[^a-z]/g, '');
+const PICTOS = {
+  commune: '<circle cx="12" cy="12" r="9" fill="#8d929c"/><circle cx="12" cy="12" r="4" fill="#fff" fill-opacity=".6"/>',
+  rare: '<path d="M6 4h12l4 6-10 11L2 10z" fill="#3b82f6"/><path d="M2 10h20M9 4l-2 6 5 11M15 4l2 6-5 11" fill="none" stroke="#fff" stroke-opacity=".65" stroke-width="1.1" stroke-linejoin="round"/>',
+  legendaire: '<path d="M12 1.8l3.1 6.6 7.2.9-5.3 5 1.4 7.2-6.4-3.6-6.4 3.6 1.4-7.2-5.3-5 7.2-.9z" fill="#f59e0b" stroke="#b45309" stroke-width="1" stroke-linejoin="round"/><path d="M12 6.5l1.4 3 3.3.4-2.4 2.3.6 3.3-2.9-1.6-2.9 1.6.6-3.3-2.4-2.3 3.3-.4z" fill="#fde68a"/>'
+};
+const picto = k => `<svg class="pic" viewBox="0 0 24 24" aria-hidden="true">${PICTOS[k] || PICTOS.commune}</svg>`;
 const RARETE = {
-  commune:    {pic: '●', nom: 'Commune'},
-  rare:       {pic: '◆', nom: 'Rare'},
-  legendaire: {pic: '★', nom: 'Légendaire'}
+  commune:    {pic: picto('commune'), nom: 'Commune'},
+  rare:       {pic: picto('rare'), nom: 'Rare'},
+  legendaire: {pic: picto('legendaire'), nom: 'Légendaire'}
 };
 // ---- dataviz : une seule teinte bleue (progression), or pour le légendaire, gris pour le reste ----
 const COUL = {acc: '#3b5b92', or: '#f59e0b', rare: '#3b82f6', commune: '#8d929c', fond: '#e4e0d6'};
@@ -1439,19 +1444,12 @@ function rendreStats(){
   const n = poolC.filter(c => possC.has(c.id)).length;
   const pc = tot ? n / tot : 0, pct = Math.round(100 * pc);
   const {courante, meilleure} = series(tiragesC, cleC);
-  const ligne = (o, col = COUL.acc) => `<div class="st-l"><span>${esc(o.lab)}</span><div class="barre"><i style="width:${o.t ? Math.round(100 * o.n / o.t) : 0}%;background:${col}"></i></div><span>${o.n} / ${o.t}</span></div>`;
+  const ligne = (o, col = COUL.acc) => `<div class="st-l"><span>${o.ico || ''}${esc(o.lab)}</span><div class="barre"><i style="width:${o.t ? Math.round(100 * o.n / o.t) : 0}%;background:${col}"></i></div><span>${o.n} / ${o.t}</span></div>`;
   const pastille = (fond, forme) => `<svg viewBox="0 0 10 10" aria-hidden="true"><rect width="10" height="10" rx="2" fill="${fond}"/>${forme || ''}</svg>`;
 
-  const m = new Map();
-  poolC.forEach(c => {
-    const k = cleSrc(c);
-    const o = m.get(k) || {lab: c.Source || 'autre', n: 0, t: 0};
-    o.t++; if (possC.has(c.id)) o.n++;
-    m.set(k, o);
-  });
   const rars = Object.keys(RARETE).map(k => {
     const cs = poolC.filter(c => (c.Rarete || 'commune') === k);
-    return {k, lab: RARETE[k].pic + ' ' + RARETE[k].nom, t: cs.length, n: cs.filter(c => possC.has(c.id)).length};
+    return {k, ico: RARETE[k].pic, lab: RARETE[k].nom, t: cs.length, n: cs.filter(c => possC.has(c.id)).length};
   }).filter(o => o.t);
 
   $('coll-titre').textContent = 'Mes albums';
@@ -1459,7 +1457,6 @@ function rendreStats(){
     ${APERCU ? '<div style="color:#b45309;font-weight:700;margin-bottom:6px">👁 Mode aperçu : toutes les cartes sont affichées</div>' : ''}
     <div id="st-hero"><div class="ring-w">${anneau(pc)}<div class="ring-c"><b>${pct} %</b><small>${n} / ${tot}</small></div></div>
       <ul><li>Série en cours <b>${courante} j</b></li><li>Record <b>${meilleure} j</b></li>${favOK ? `<li>Favoris <b id="st-fav">${poolC.filter(c => favs.has(c.id)).length}</b></li>` : ''}</ul></div>
-    <div class="st-h">Par source</div>${[...m.values()].map(o => ligne(o)).join('')}
     <div class="st-h">Par rareté</div>${rars.map(o => ligne(o, {commune: COUL.commune, rare: COUL.rare, legendaire: COUL.or}[o.k])).join('')}
     <div class="leg">
       <span>${pastille(COUL.acc)}possédée</span><span>${pastille(COUL.fond)}à découvrir</span>
