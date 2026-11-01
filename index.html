@@ -71,7 +71,7 @@
   .p-corps b{font-size:15px;letter-spacing:.12em}
   .p-corps small{opacity:.85}
   .p-guide{position:absolute;left:0;right:0;top:15%;z-index:4;transform:translateY(-50%);height:0;border-top:2px dashed rgba(255,255,255,.9);pointer-events:none}
-  .p-guide span{position:absolute;left:6px;top:-13px;font-size:18px}
+  .p-guide svg{position:absolute;left:4px;top:-12px;width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 1px 2px rgba(0,0,0,.45))}
   .p-peek{position:absolute;left:8%;right:8%;top:12%;height:30%;z-index:1;border-radius:8px;background:#fff;border:3px solid #ddd;transition:transform .5s}
   .pochette.dechire .p-corps{clip-path:polygon(0 3%,8% 0,16% 3%,24% 0,32% 3%,40% 0,48% 3%,56% 0,64% 3%,72% 0,80% 3%,88% 0,100% 3%,100% 100%,0 100%)}
   .pochette.dechire .p-guide{display:none}
@@ -1414,9 +1414,9 @@ async function afficher(){
     $('app').innerHTML = `<div class="pochette-wrap"><div class="pochette" id="poch">
       <div class="p-peek"></div>
       <div class="p-haut"></div>
-      <div class="p-guide"><span>✂️</span></div>
+      <div class="p-guide"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="6.5" r="3"/><circle cx="5" cy="17.5" r="3"/><path d="M7.5 8.4L22 14.6M7.5 15.6L22 9.4"/></svg></div>
       <div class="p-corps"><div class="logo">🎴</div><b>PAQUET DU JOUR</b><small>${Math.min(NB, restants)} carte${Math.min(NB, restants) > 1 ? 's' : ''}</small></div>
-    </div><div class="p-hint">Fais glisser pour déchirer →</div></div>`;
+    </div><div class="p-hint">Touche le paquet pour l'ouvrir</div></div>`;
     initPochette(cle);
     $('info').textContent = '';
     $('top-sub').textContent = 'Ton paquet du jour t\'attend !';
