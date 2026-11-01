@@ -351,6 +351,7 @@
   <div id="sauv-btns">
     <button id="sauv-export" type="button">Exporter</button>
     <button id="sauv-import" type="button">Importer</button>
+    <button id="sauv-reset" type="button" style="background:#b91c1c">Réinitialiser</button>
   </div>
   <input id="sauv-file" type="file" accept=".json,application/json" hidden>
   <div id="sauv-msg"></div>
@@ -444,6 +445,50 @@ const RARETE = {
   rare:       {pic: '◆', nom: 'Rare'},
   legendaire: {pic: '★', nom: 'Légendaire'}
 };
+// ---- dataviz : une seule teinte bleue (progression), or pour le légendaire, gris pour le reste ----
+const COUL = {acc: '#3b5b92', or: '#f59e0b', rare: '#3b82f6', commune: '#8d929c', fond: '#e4e0d6'};
+// anneau de progression (SVG) ; p entre 0 et 1
+function anneau(p, ep = 9, col = COUL.acc){
+  const r = 50 - ep / 2 - 1, c = 2 * Math.PI * r, q = Math.max(0, Math.min(1, p || 0)), d = q * c;
+  return `<svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="${r}" fill="none" stroke="${COUL.fond}" stroke-width="${ep}"/>`
+    + (d > .5 ? `<circle class="arc" cx="50" cy="50" r="${r}" fill="none" stroke="${col}" stroke-width="${ep}" stroke-linecap="${q >= 1 ? 'butt' : 'round'}" stroke-dasharray="${d.toFixed(2)} ${(c + 2).toFixed(2)}" transform="rotate(-90 50 50)"/>` : '')
+    + '</svg>';
+}
+// 14 derniers jours : un point par jour, plein = paquet ouvert, cerclé = aujourd'hui à ouvrir
+function calendrier(tirages, cle){
+  if (!cle) return '';
+  const JOUR = 86400000, ms = Date.parse(cle + 'T00:00:00Z');
+  const faits = new Set(tirages.map(t => normJour(t.Jour).slice(0, 10)));
+  const N = 14, pas = 16;
+  let out = '';
+  for (let i = 0; i < N; i++){
+    const t = ms - (N - 1 - i) * JOUR, k = new Date(t).toISOString().slice(0, 10);
+    const fait = faits.has(k), auj = i === N - 1, x = i * pas + 8;
+    const fill = fait ? COUL.acc : (auj ? '#fff' : COUL.fond);
+    const trait = auj && !fait ? ` stroke="${COUL.acc}" stroke-width="1.6"` : '';
+    const lib = new Date(t).toLocaleDateString('fr-FR', {weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC'})
+      + (fait ? ' : paquet ouvert' : auj ? ' : paquet à ouvrir' : ' : pas de paquet');
+    out += `<g><title>${esc(lib)}</title><circle cx="${x}" cy="9" r="6.2" fill="${fill}"${trait}/><text x="${x}" y="27">${'DLMMJVS'[new Date(t).getUTCDay()]}</text></g>`;
+  }
+  return `<svg class="cal" viewBox="0 0 ${N * pas} 31" role="img" aria-label="Paquets ouverts ces 14 derniers jours">${out}</svg>`;
+}
+// mosaïque d'un album : une case par carte (grise = à découvrir, sans révéler sa rareté ; point = rare ; losange or = légendaire)
+function mosaique(cs){
+  const L = [...cs].sort((a, b) => (numC.get(a.id) || 0) - (numC.get(b.id) || 0));
+  const N = 10, T = 8, G = 2, rows = Math.max(1, Math.ceil(L.length / N));
+  const w = N * T + (N - 1) * G, h = rows * T + (rows - 1) * G;
+  const corps = L.map((c, i) => {
+    const x = (i % N) * (T + G), y = Math.floor(i / N) * (T + G), cx = x + T / 2, cy = y + T / 2;
+    const num = String(numC.get(c.id) || i + 1).padStart(2, '0');
+    if (!possC.has(c.id)) return `<g><title>N° ${num} · à découvrir</title><rect x="${x}" y="${y}" width="${T}" height="${T}" rx="2" fill="${COUL.fond}"/></g>`;
+    const leg = c.Rarete === 'legendaire', rare = c.Rarete === 'rare';
+    return `<g><title>N° ${num} · ${esc(c.Titre)}</title><rect x="${x}" y="${y}" width="${T}" height="${T}" rx="2" fill="${leg ? COUL.or : COUL.acc}"/>`
+      + (rare ? `<circle cx="${cx}" cy="${cy}" r="1.7" fill="#fff"/>` : '')
+      + (leg ? `<path d="M${cx} ${cy - 2.6}L${cx + 2.6} ${cy}L${cx} ${cy + 2.6}L${cx - 2.6} ${cy}Z" fill="#fff"/>` : '') + '</g>';
+  }).join('');
+  const n = L.filter(c => possC.has(c.id)).length;
+  return `<svg class="mos" viewBox="0 0 ${w} ${h}" role="img" aria-label="${n} cartes sur ${L.length}">${corps}</svg>`;
+}
 let busy = false;
 let cartesCourantes = [], vues = new Set(), idx = 0, jeton = 0;
 
@@ -840,21 +885,27 @@ function statsJeu(pool, tirages, poss, cle){
     nbRare: cs.filter(estRare).length,
     nbFav: cs.filter(c => favs.has(c.id)).length,
     nbAlbums: albumsComplets(pool, poss).size,
-    pct: totalPool ? 100 * cs.length / totalPool : 0       // sur toute la collection, albums pas encore sortis compris
+    pct: totalPool ? 100 * cs.length / totalPool : 0,      // sur toute la collection, albums pas encore sortis compris
+    albMax: (() => {                                       // avancement de l'album le plus avancé (0 à 1)
+      const m = new Map();
+      pool.forEach(c => { const k = cleAlb(c), o = m.get(k) || {n: 0, t: 0}; o.t++; if (poss.has(c.id)) o.n++; m.set(k, o); });
+      return Math.max(0, ...[...m.values()].map(o => o.t ? o.n / o.t : 0));
+    })()
   };
 }
 // Badges calculés à la volée (rien n'est stocké) : modifie seuils et textes ici
 const BADGES = [
-  {id:'premier', ico:'🎴', nom:'Premier paquet',  desc:'Ouvrir ton premier paquet.',                 ok: s => s.tirages >= 1},
-  {id:'serie3',  ico:'🔥', nom:'3 jours de suite', desc:'Ouvrir un paquet 3 jours de suite.',          ok: s => s.meilleure >= 3},
-  {id:'serie7',  ico:'⚡', nom:'7 jours de suite', desc:'Ouvrir un paquet 7 jours de suite.',          ok: s => s.meilleure >= 7},
-  {id:'serie30', ico:'🌟', nom:'30 jours de suite',desc:'Ouvrir un paquet 30 jours de suite.',         ok: s => s.meilleure >= 30},
-  {id:'leg1',    ico:'👑', nom:'Légendaire',       desc:'Obtenir ta première carte légendaire.',       ok: s => s.nbLeg >= 1},
-  {id:'rare10',  ico:'💎', nom:'10 raretés',       desc:'Posséder 10 cartes rares ou légendaires.',    ok: s => s.nbRare >= 10},
-  {id:'fav10',   ico:'💖', nom:'10 favoris',       desc:'Mettre 10 cartes en favori.',                 ok: s => s.nbFav >= 10},
-  {id:'album1',  ico:'🏆', nom:'Album complet',    desc:'Compléter un album en entier.',               ok: s => s.nbAlbums >= 1},
-  {id:'moitie',  ico:'📈', nom:'Mi-parcours',      desc:'Posséder la moitié de la collection.',        ok: s => s.pct >= 50},
-  {id:'tout',    ico:'🌈', nom:'Collection complète', desc:'Posséder toutes les cartes.',              ok: s => s.pct >= 100}
+  // val / cible / u : avancement affiché sous le badge et dans l'anneau (u = unité facultative)
+  {id:'premier', ico:'🎴', nom:'Premier paquet',  desc:'Ouvrir ton premier paquet.',                 ok: s => s.tirages >= 1, val: s => s.tirages, cible: 1},
+  {id:'serie3',  ico:'🔥', nom:'3 jours de suite', desc:'Ouvrir un paquet 3 jours de suite.',          ok: s => s.meilleure >= 3, val: s => s.meilleure, cible: 3},
+  {id:'serie7',  ico:'⚡', nom:'7 jours de suite', desc:'Ouvrir un paquet 7 jours de suite.',          ok: s => s.meilleure >= 7, val: s => s.meilleure, cible: 7},
+  {id:'serie30', ico:'🌟', nom:'30 jours de suite',desc:'Ouvrir un paquet 30 jours de suite.',         ok: s => s.meilleure >= 30, val: s => s.meilleure, cible: 30},
+  {id:'leg1',    ico:'👑', nom:'Légendaire',       desc:'Obtenir ta première carte légendaire.',       ok: s => s.nbLeg >= 1, val: s => s.nbLeg, cible: 1},
+  {id:'rare10',  ico:'💎', nom:'10 raretés',       desc:'Posséder 10 cartes rares ou légendaires.',    ok: s => s.nbRare >= 10, val: s => s.nbRare, cible: 10},
+  {id:'fav10',   ico:'💖', nom:'10 favoris',       desc:'Mettre 10 cartes en favori.',                 ok: s => s.nbFav >= 10, val: s => s.nbFav, cible: 10},
+  {id:'album1',  ico:'🏆', nom:'Album complet',    desc:'Compléter un album en entier.',               ok: s => s.nbAlbums >= 1, val: s => Math.round(100 * s.albMax), cible: 100, u: ' %'},
+  {id:'moitie',  ico:'📈', nom:'Mi-parcours',      desc:'Posséder la moitié de la collection.',        ok: s => s.pct >= 50, val: s => Math.round(s.pct), cible: 50, u: ' %'},
+  {id:'tout',    ico:'🌈', nom:'Collection complète', desc:'Posséder toutes les cartes.',              ok: s => s.pct >= 100, val: s => Math.round(s.pct), cible: 100, u: ' %'}
 ];
 let badgesCourants = [];
 $('badges').onclick = e => {
@@ -1364,10 +1415,10 @@ function series(tirages, cle){
 function rendreStats(){
   const tot = poolC.length;
   const n = poolC.filter(c => possC.has(c.id)).length;
-  const pct = tot ? Math.round(100 * n / tot) : 0;
+  const pc = tot ? n / tot : 0, pct = Math.round(100 * pc);
   const {courante, meilleure} = series(tiragesC, cleC);
-  const j = k => k + ' jour' + (k > 1 ? 's' : '');
-  const ligne = o => `<div class="st-l"><span>${esc(o.lab)}</span><div class="barre"><i style="width:${o.t ? Math.round(100 * o.n / o.t) : 0}%"></i></div><span>${o.n} / ${o.t}</span></div>`;
+  const ligne = (o, col = COUL.acc) => `<div class="st-l"><span>${esc(o.lab)}</span><div class="barre"><i style="width:${o.t ? Math.round(100 * o.n / o.t) : 0}%;background:${col}"></i></div><span>${o.n} / ${o.t}</span></div>`;
+  const pastille = (fond, forme) => `<svg viewBox="0 0 10 10" aria-hidden="true"><rect width="10" height="10" rx="2" fill="${fond}"/>${forme || ''}</svg>`;
 
   const m = new Map();
   poolC.forEach(c => {
@@ -1378,19 +1429,21 @@ function rendreStats(){
   });
   const rars = Object.keys(RARETE).map(k => {
     const cs = poolC.filter(c => (c.Rarete || 'commune') === k);
-    return {lab: RARETE[k].pic + ' ' + RARETE[k].nom, t: cs.length, n: cs.filter(c => possC.has(c.id)).length};
+    return {k, lab: RARETE[k].pic + ' ' + RARETE[k].nom, t: cs.length, n: cs.filter(c => possC.has(c.id)).length};
   }).filter(o => o.t);
 
   $('coll-titre').textContent = 'Mes albums';
   $('stats').innerHTML = `
     ${APERCU ? '<div style="color:#b45309;font-weight:700;margin-bottom:6px">👁 Mode aperçu : toutes les cartes sont affichées</div>' : ''}
-    <div id="st-top"><span>${n} / ${tot} cartes</span><span>${pct} %</span></div>
-    <div class="barre"><i style="width:${pct}%"></i></div>
-    <div id="st-serie">🔥 Série : ${j(courante)} · Meilleure : ${j(meilleure)}${favOK ? ` · ♥ <span id="st-fav">${poolC.filter(c => favs.has(c.id)).length}</span>` : ''}</div>
-    <details><summary>Détail par source et rareté</summary>
-      <div class="st-h">Sources</div>${[...m.values()].map(ligne).join('')}
-      <div class="st-h">Raretés</div>${rars.map(ligne).join('')}
-    </details>`;
+    <div id="st-hero"><div class="ring-w">${anneau(pc)}<div class="ring-c"><b>${pct} %</b><small>${n} / ${tot}</small></div></div>
+      <ul><li>Série en cours <b>${courante} j</b></li><li>Record <b>${meilleure} j</b></li>${favOK ? `<li>Favoris <b id="st-fav">${poolC.filter(c => favs.has(c.id)).length}</b></li>` : ''}</ul></div>
+    <div class="st-h">Par source</div>${[...m.values()].map(o => ligne(o)).join('')}
+    <div class="st-h">Par rareté</div>${rars.map(o => ligne(o, {commune: COUL.commune, rare: COUL.rare, legendaire: COUL.or}[o.k])).join('')}
+    <div class="leg">
+      <span>${pastille(COUL.acc)}possédée</span><span>${pastille(COUL.fond)}à découvrir</span>
+      <span>${pastille(COUL.acc, '<circle cx="5" cy="5" r="1.9" fill="#fff"/>')}rare</span>
+      <span>${pastille(COUL.or, '<path d="M5 2L8 5L5 8L2 5Z" fill="#fff"/>')}légendaire</span>
+    </div>`;
 }
 
 // ---- collection : étagère d'albums puis vignettes d'un album ----
@@ -1398,16 +1451,16 @@ function rendreEtagere(){
   const m = new Map();
   poolC.forEach(c => {
     const k = cleAlb(c);
-    const o = m.get(k) || {k, lab: albumDe(c), src: cleSrc(c), n: 0, t: 0};
-    o.t++; if (possC.has(c.id)) o.n++;
+    const o = m.get(k) || {k, lab: albumDe(c), src: cleSrc(c), n: 0, t: 0, cs: []};
+    o.t++; o.cs.push(c); if (possC.has(c.id)) o.n++;
     m.set(k, o);
   });
   const nx = aVenir[0];                                  // prochain album : silhouette verrouillée, sans révéler son thème
   $('albums').innerHTML = [...m.values()].map(o => {
-    const pct = o.t ? Math.round(100 * o.n / o.t) : 0, ok = o.t && o.n === o.t;
+    const ok = o.t && o.n === o.t;
     return `<button class="album s-${o.src}" data-alb="${esc(o.k)}">
       <div class="al-couv"><span class="al-ico">${ICONE[o.src] || '📘'}</span><b>${esc(o.lab)}</b><small>Album</small>${ok ? '<i class="al-ok">COMPLET</i>' : ''}</div>
-      <div class="barre"><i style="width:${pct}%"></i></div><span class="al-n">${o.n} / ${o.t}</span></button>`;
+      ${mosaique(o.cs)}<span class="al-n">${o.n} / ${o.t}</span></button>`;
   }).join('') + (nx ? `<div class="album a-venir"><div class="al-couv"><span class="al-ico">🔒</span><b>Prochain album</b><small>${esc(fmtDate(nx.date))}</small></div>
       <div class="barre"><i style="width:0"></i></div><span class="al-n">à découvrir</span></div>` : '');
 }
@@ -1497,17 +1550,24 @@ function majAccueil(){
   const idsPool = new Set(poolH.map(c => c.id));         // ignore les cartes supprimées du Pool
   const n = [...new Set(collRows.map(r => r.CarteId))].filter(id => idsPool.has(id)).length;
   const nf = poolH.filter(c => favs.has(c.id)).length;
-  const s = series(tirH, cleH).courante;
+  const sr = series(tirH, cleH), s = sr.courante, pc = tot ? n / tot : 0;
+  $('dash').hidden = !tot;
+  $('dash').innerHTML = `<div class="ring-w">${anneau(pc)}<div class="ring-c"><b>${Math.round(100 * pc)} %</b><small>${n} / ${tot}</small></div></div>
+    <div class="d-r"><h2>14 derniers jours</h2>${calendrier(tirH, cleH)}
+      <div class="d-txt">Série en cours : <b>${sr.courante} j</b> · record : <b>${sr.meilleure} j</b></div></div>`;
   $('top-chips').innerHTML = `<span class="chip">🔥 ${s} j</span><span class="chip">🎴 ${n}/${tot}</span>`;
   $('t-alb-n').textContent = `${n} / ${tot} cartes`;
   $('t-alb-b').style.width = (tot ? Math.round(100 * n / tot) : 0) + '%';
   $('t-fav-n').textContent = favOK ? `${nf} favori${nf > 1 ? 's' : ''}` : 'indisponible';
   const sj = statsJeu(poolH, tirH, new Set(collRows.map(r => r.CarteId)), cleH);
-  const tous = BADGES.map(b => ({...b, on: b.ok(sj)})).concat(badgesEnigmes());
+  const tous = BADGES.map(b => ({...b, on: b.ok(sj), val: b.val ? b.val(sj) : 0})).concat(badgesEnigmes());
   badgesCourants = tous;
   $('badges-n').textContent = `${tous.filter(b => b.on).length} / ${tous.length}`;
-  $('badges').innerHTML = tous.map(b =>
-    `<button class="badge ${b.on ? 'ok' : 'lock'}" data-b="${esc(b.id)}"><i>${b.ico}</i>${esc(b.nom)}${b.pct != null ? `<b>${b.pct} %</b>` : ''}</button>`).join('');
+  $('badges').innerHTML = tous.map(b => {
+    const p = b.on ? 1 : (b.cible ? Math.min(1, b.val / b.cible) : 0);
+    const prog = !b.on && b.cible ? `<small>${Math.min(b.val, b.cible)} / ${b.cible}${b.u || ''}</small>` : '';
+    return `<button class="badge ${b.on ? 'ok' : 'lock'}" data-b="${esc(b.id)}"><span class="bg">${anneau(p, 8, b.on ? COUL.or : COUL.acc)}<i>${b.ico}</i></span>${esc(b.nom)}${b.pct != null ? `<b>${b.pct} %</b>` : ''}${prog}</button>`;
+  }).join('');
 }
 function majOnglet(t){
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('actif', b.dataset.tab === t));
@@ -1567,6 +1627,15 @@ function lireStockDepuis(s){
   s.seq = Math.max(s.seq || 1, 1 + Math.max(0, ...s.tirages.map(t => t.id || 0), ...s.collection.map(r => r.id || 0)));
   return s;
 }
+
+$('sauv-reset').onclick = async () => {
+  if (!confirm('Effacer toute la progression (cartes, favoris, énigmes) ? Pense à exporter avant.')) return;
+  try{ localStorage.removeItem(CLE_STOCK); }catch(e){}
+  stock = {tirages: [], collection: [], seq: 1};
+  msgSauv('Progression réinitialisée.');
+  await afficher();
+  onglet('jour');
+};
 
 try{ navigator.storage && navigator.storage.persist && navigator.storage.persist(); }catch(e){}   // demande de ne pas effacer le stockage
 if (TEST){
