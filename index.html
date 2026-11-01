@@ -23,7 +23,7 @@
   #top-sub{flex:1;min-width:0;font-family:var(--rond);font-size:18px;font-weight:800;line-height:1.2;letter-spacing:-.01em;color:#3b5b92;text-wrap:balance}
   #top-sub b{font-variant-numeric:tabular-nums;color:#6a3b92;font-weight:800}
   .chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-  .chip{background:#fff;border-radius:16px;padding:5px 10px;font-size:12px;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12);white-space:nowrap}
+  .chip{display:inline-flex;align-items:center;gap:4px;background:#fff;border-radius:16px;padding:5px 10px;font-size:12px;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12);white-space:nowrap}
 
   /* tuiles d'accueil */
   #tuiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
@@ -34,6 +34,7 @@
   .tuile b{font-size:17px}
   .tuile small{opacity:.9;font-size:12px}
   .t-ico{position:absolute;top:8px;right:12px;font-size:46px;opacity:.9;line-height:1}
+  .t-ico .i{display:block;stroke-width:1.6}
   .t-alb{background:var(--p-graticule),linear-gradient(135deg,#3b5b92,#6a3b92)}
   .t-fav{background:linear-gradient(135deg,#f43f5e,#be185d)}
   .tuile .barre{background:rgba(255,255,255,.3);margin-top:4px}
@@ -67,7 +68,8 @@
   .p-corps{top:14%;bottom:0;z-index:2;border-radius:0 0 10px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;overflow:hidden}
   .p-corps::before{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.35) 50%,transparent 65%);
     background-size:250% 100%;animation:brille 3.2s linear infinite}
-  .p-corps .logo{font-size:54px}
+  .p-corps .logo{font-size:54px;line-height:1}
+  .p-corps .logo .i{display:block;stroke-width:1.6}
   .p-corps b{font-size:15px;letter-spacing:.12em}
   .p-corps small{opacity:.85}
   .p-guide{position:absolute;left:0;right:0;top:15%;z-index:4;transform:translateY(-50%);height:0;border-top:2px dashed rgba(255,255,255,.9);pointer-events:none}
@@ -99,6 +101,7 @@
   .dos{display:flex;align-items:center;justify-content:center;font-size:48px;color:rgba(255,255,255,.85)}
   .dos::after{content:'';position:absolute;inset:8px;border:1px solid rgba(255,255,255,.35);border-radius:8px}
   .dos{flex-direction:column;gap:8px}
+  .dos .i{width:1em;height:1em;stroke-width:1.5}
   .dos small{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;text-align:center;padding:0 14px;line-height:1.25;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 
   /* recto : visuel en haut, texte en dessous */
@@ -109,6 +112,11 @@
   .vis img{display:block;width:100%;height:100%;object-fit:cover}
   .txt{flex:1;overflow:auto;padding:8px 10px}
   .txt small{color:#666;text-transform:uppercase;font-size:10px}
+  .i{display:inline-block;width:1em;height:1em;vertical-align:-.16em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+  .i.f{fill:currentColor}
+  .i.ok{color:#10b981}
+  .i.no{color:#dc2626}
+  .i.or{color:#ea580c}
   .rar{margin-left:4px;vertical-align:-3px}
   .pic{display:inline-block;width:16px;height:16px;flex:none}
   .txt h3{margin:4px 0;font-size:15px}
@@ -118,6 +126,9 @@
   .fav{position:absolute;top:6px;right:6px;z-index:2;width:34px;height:34px;padding:0;border:0;border-radius:50%;
     background:rgba(255,255,255,.88);color:#999;font-size:20px;line-height:1;cursor:pointer}
   .fav.est{color:#e11d48}
+  .fav{display:grid;place-items:center}
+  .fav .i{width:20px;height:20px}
+  .grande .fav .i{width:24px;height:24px}
 
   #info{margin-top:14px;text-align:center;color:#555;font-size:14px;font-weight:700;font-family:var(--rond)}
 
@@ -136,7 +147,8 @@
   .album{border:0;background:none;padding:0;font:inherit;color:#222;cursor:pointer;display:flex;flex-direction:column;gap:6px;text-align:left}
   .al-couv{position:relative;aspect-ratio:3/4;border-radius:6px 14px 14px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
     color:#fff;text-align:center;padding:10px;box-shadow:inset 8px 0 0 rgba(0,0,0,.25),0 4px 10px rgba(0,0,0,.25)}
-  .al-ico{font-size:34px}
+  .al-ico{font-size:34px;line-height:1}
+  .al-ico .i{display:block;stroke-width:1.6}
   .al-couv b{font-size:14px;line-height:1.2;overflow-wrap:anywhere}
   .al-couv small{opacity:.8;text-transform:uppercase;font-size:10px;letter-spacing:.1em}
   .al-ok{position:absolute;top:10px;right:-6px;background:#f59e0b;color:#fff;font-style:normal;font-size:10px;font-weight:700;padding:3px 8px;border-radius:3px;transform:rotate(6deg)}
@@ -231,6 +243,7 @@
   /* sauvegarde de la progression */
   #sauv-box{margin-top:22px;background:#fff;border-radius:12px;padding:10px 12px;font-size:13px}
   #sauv-box h2{margin:0 0 6px;font-size:15px}
+  h2 .i,#rv-skip .i,#en-actions .i,#en-titre .i{margin-right:2px}
   #sauv-box p{margin:0 0 8px;color:#666}
   #sauv-btns{display:flex;gap:8px;flex-wrap:wrap}
   #sauv-btns button{border:0;border-radius:10px;padding:9px 14px;background:#3b5b92;color:#fff;font:inherit;font-weight:600;cursor:pointer}
@@ -244,6 +257,8 @@
   .badge{border:0;background:#fff;border-radius:12px;padding:8px 2px;font:inherit;font-size:10px;text-align:center;
     box-shadow:0 1px 3px rgba(0,0,0,.12);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:#333;-webkit-tap-highlight-color:transparent}
   .badge i{font-style:normal;font-size:22px;line-height:1}
+  .badge i .i{display:block}
+  .badge.ok i{color:#b45309}
   .badge.lock{color:#777}
   .badge.lock i{opacity:.35;filter:grayscale(1)}
   .bg{position:relative;width:46px;height:46px;display:grid;place-items:center}
@@ -332,22 +347,22 @@
 
 <div id="tuiles">
   <button class="tuile t-alb" data-tab="albums">
-    <span class="t-ico">📚</span><b>Mes albums</b><small id="t-alb-n"></small>
+    <span class="t-ico"><span data-i="book"></span></span><b>Mes albums</b><small id="t-alb-n"></small>
     <div class="barre"><i id="t-alb-b" style="width:0"></i></div>
   </button>
   <button class="tuile t-fav" data-tab="favoris">
-    <span class="t-ico">♥</span><b>Mes favoris</b><small id="t-fav-n"></small>
+    <span class="t-ico"><span data-i="heart" data-x="f"></span></span><b>Mes favoris</b><small id="t-fav-n"></small>
   </button>
 </div>
 
 <section id="badges-box">
-  <h2>🏅 Badges <span id="badges-n"></span></h2>
+  <h2><span data-i="award"></span> Badges <span id="badges-n"></span></h2>
   <div id="badges"></div>
   <div id="badge-desc">Touche un badge pour voir comment l'obtenir.</div>
 </section>
 
 <section id="sauv-box">
-  <h2>💾 Sauvegarde</h2>
+  <h2><span data-i="save"></span> Sauvegarde</h2>
   <p>Ta progression est stockée dans ce navigateur. Exporte-la régulièrement : elle est perdue si tu vides les données du site.</p>
   <div id="sauv-btns">
     <button id="sauv-export" type="button">Exporter</button>
@@ -397,7 +412,7 @@
 </div>
 
 <div id="reveal" hidden>
-  <div id="rv-top"><span id="rv-count"></span><button id="rv-skip">Tout révéler ⏭</button></div>
+  <div id="rv-top"><span id="rv-count"></span><button id="rv-skip">Tout révéler <span data-i="skip"></span></button></div>
   <div id="rv-stage"></div>
   <div id="rv-hint"></div>
   <div id="rv-flash"></div>
@@ -406,7 +421,7 @@
   <div id="en-haut">
     <div id="en-bar">
       <button id="en-close" aria-label="Fermer">‹</button>
-      <div id="en-titre">🧩 Énigme</div>
+      <div id="en-titre"><span data-i="puzzle"></span> Énigme</div>
       <div id="en-stats"></div>
     </div>
     <div id="en-mot"></div>
@@ -420,8 +435,8 @@
   <div id="en-texte"></div>
   <div id="en-props"></div>
   <div id="en-actions">
-    <button id="en-indice" type="button">💡 Indice</button>
-    <button id="en-abandon" type="button">🏳 Abandonner</button>
+    <button id="en-indice" type="button"><span data-i="bulb"></span> Indice</button>
+    <button id="en-abandon" type="button"><span data-i="flag"></span> Abandonner</button>
   </div>
 </div>
 <div id="confetti"></div>
@@ -439,6 +454,43 @@ const GALLICA_W = 600;        // largeur en px des images Gallica (400 = plus l�
 const POIDS = { commune: 70, rare: 25, legendaire: 5 };
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// ---- icônes SVG (trait, couleur = currentColor) ----
+const IC = {
+  book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+  heart: '<path d="M12 20.8C5 16.4 2.6 12.7 2.6 9.2 2.6 6.3 4.8 4.2 7.4 4.2c1.8 0 3.4 1 4.6 2.8 1.2-1.8 2.8-2.8 4.6-2.8 2.6 0 4.8 2.1 4.8 5 0 3.5-2.4 7.2-9.4 11.6z"/>',
+  award: '<circle cx="12" cy="8" r="6"/><path d="M15.5 12.9L17 22l-5-3-5 3 1.5-9.1"/>',
+  save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/>',
+  skip: '<path d="M5 4l10 8-10 8z"/><path d="M19 5v14"/>',
+  puzzle: '<path d="M4 8h4a2 2 0 1 1 4 0h4v4a2 2 0 1 1 0 4v4H4z"/>',
+  bulb: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6M10 22h4"/>',
+  flag: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/>',
+  globe: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+  scroll: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8M8 9h2"/>',
+  flask: '<path d="M10 2v7.5a2 2 0 0 1-.2.9L4.7 20.5a1 1 0 0 0 .9 1.5h12.8a1 1 0 0 0 .9-1.5l-5.1-10.1a2 2 0 0 1-.2-.9V2"/><path d="M8.5 2h7M7 16h10"/>',
+  message: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  cards: '<rect x="3" y="5" width="11" height="15" rx="2" transform="rotate(-8 8.5 12.5)"/><rect x="9.5" y="4" width="11" height="15" rx="2"/>',
+  flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4.1 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+  zap: '<path d="M13 2L3 14h9l-1 8 10-12h-9z"/>',
+  star: '<path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.9L12 17.8l-6.2 3.3L7 14.2 2 9.3l6.9-1z"/>',
+  crown: '<path d="M11.6 3.3a.5.5 0 0 1 .8 0l3 5.6a1 1 0 0 0 1.5.3l4.3-3.7a.5.5 0 0 1 .8.5l-2.8 10.2a1 1 0 0 1-1 .7H5.8a1 1 0 0 1-1-.7L2 6a.5.5 0 0 1 .8-.5l4.3 3.7a1 1 0 0 0 1.5-.3z"/><path d="M5 21h14"/>',
+  gem: '<path d="M6 3h12l4 6-10 12L2 9z"/><path d="M11 3L8 9l4 12 4-12-3-6M2 9h20"/>',
+  trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16"/><path d="M10 14.7V17c0 .6-.5 1-1 1.2C7.9 18.8 7 20.2 7 22M14 14.7V17c0 .6.5 1 1 1.2 1.1.6 2 2 2 3.8"/><path d="M18 2H6v7a6 6 0 0 0 12 0z"/>',
+  trend: '<path d="M22 7l-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/>',
+  rainbow: '<path d="M22 17a10 10 0 0 0-20 0"/><path d="M6 17a6 6 0 0 1 12 0"/><path d="M10 17a2 2 0 0 1 4 0"/>',
+  lock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  check: '<circle cx="12" cy="12" r="10"/><path d="M8 12.5l3 3 5-6"/>',
+  cross: '<circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/>',
+  hourglass: '<path d="M5 22h14M5 2h14M17 22v-4.2a2 2 0 0 0-.6-1.4L12 12l-4.4 4.4A2 2 0 0 0 7 17.8V22M7 2v4.2a2 2 0 0 0 .6 1.4L12 12l4.4-4.4A2 2 0 0 0 17 6.2V2"/>',
+  timer: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/>',
+  pencil: '<path d="M17 3a2.85 2.85 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>',
+  target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+  sparkles: '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 3v4M17 5h4M5 17v4M3 19h4"/>',
+  warn: '<path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+  eye: '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'
+};
+const I = (n, x = '') => `<svg class="i${x ? ' ' + x : ''}" viewBox="0 0 24 24" aria-hidden="true">${IC[n] || ''}</svg>`;
+// emplacements d'icônes écrits dans le HTML : <span data-i="nom"></span>
+document.querySelectorAll('[data-i]').forEach(e => { e.outerHTML = I(e.dataset.i, e.dataset.x || ''); });
 const norm = s => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 const cleSrc = c => String(c.Source || 'autre').toLowerCase().replace(/[^a-z]/g, '');
 const PICTOS = {
@@ -509,7 +561,7 @@ let numC = new Map(), albumC = null, modeC = 'albums';   // modeC : 'albums' | '
 let poolH = [], tirH = [], cleH = '';
 const albumDe = c => String(c.Album || c.Source || 'autre');
 const cleAlb = c => norm(albumDe(c));
-const ICONE = {wikipedia:'🌍', gallica:'📜', science:'🔬', mot:'💬'};
+const ICONE = {wikipedia:'globe', gallica:'scroll', science:'flask', mot:'message'};
 function numeroter(pool){
   const m = new Map(), cpt = new Map();
   [...pool].sort((a,b) => (a.Numero || 1e9) - (b.Numero || 1e9) || a.id - b.id).forEach(c => {
@@ -665,7 +717,7 @@ function carteHTML(c){
     <div class="dos">?<small>${esc(albumDe(c))}</small></div>
     <div class="face">
       <div class="vis ph">${c.Image ? `<img src="${esc(c.Image)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ''}</div>
-      ${favOK ? `<button class="fav${f ? ' est' : ''}" data-fav="${c.id}" aria-label="Favori" aria-pressed="${f}">${f ? '♥' : '♡'}</button>` : ''}
+      ${favOK ? `<button class="fav${f ? ' est' : ''}" data-fav="${c.id}" aria-label="Favori" aria-pressed="${f}">${I('heart', f ? 'f' : '')}</button>` : ''}
       <div class="txt">
         <small>${numC.has(c.id) ? `<span class="num">N° ${String(numC.get(c.id)).padStart(2,'0')}</span>` : ''}${esc(c.Source)} <span class="rar" title="${rar.nom}" aria-label="${rar.nom}">${rar.pic}</span></small>
         <h3>${esc(c.Titre)}</h3><p>${esc(c.Extrait)}</p>
@@ -712,7 +764,7 @@ function majCoeurs(id){
   const f = favs.has(id);
   document.querySelectorAll(`.fav[data-fav="${id}"]`).forEach(b => {
     b.classList.toggle('est', f);
-    b.textContent = f ? '♥' : '♡';
+    b.innerHTML = I('heart', f ? 'f' : '');
     b.setAttribute('aria-pressed', f);
   });
 }
@@ -924,22 +976,22 @@ function statsJeu(pool, tirages, poss, cle){
 // Badges calculés à la volée (rien n'est stocké) : modifie seuils et textes ici
 const BADGES = [
   // val / cible / u : avancement affiché sous le badge et dans l'anneau (u = unité facultative)
-  {id:'premier', ico:'🎴', nom:'Premier paquet',  desc:'Ouvrir ton premier paquet.',                 ok: s => s.tirages >= 1, val: s => s.tirages, cible: 1},
-  {id:'serie3',  ico:'🔥', nom:'3 jours de suite', desc:'Ouvrir un paquet 3 jours de suite.',          ok: s => s.meilleure >= 3, val: s => s.meilleure, cible: 3},
-  {id:'serie7',  ico:'⚡', nom:'7 jours de suite', desc:'Ouvrir un paquet 7 jours de suite.',          ok: s => s.meilleure >= 7, val: s => s.meilleure, cible: 7},
-  {id:'serie30', ico:'🌟', nom:'30 jours de suite',desc:'Ouvrir un paquet 30 jours de suite.',         ok: s => s.meilleure >= 30, val: s => s.meilleure, cible: 30},
-  {id:'leg1',    ico:'👑', nom:'Légendaire',       desc:'Obtenir ta première carte légendaire.',       ok: s => s.nbLeg >= 1, val: s => s.nbLeg, cible: 1},
-  {id:'rare10',  ico:'💎', nom:'10 raretés',       desc:'Posséder 10 cartes rares ou légendaires.',    ok: s => s.nbRare >= 10, val: s => s.nbRare, cible: 10},
-  {id:'fav10',   ico:'💖', nom:'10 favoris',       desc:'Mettre 10 cartes en favori.',                 ok: s => s.nbFav >= 10, val: s => s.nbFav, cible: 10},
-  {id:'album1',  ico:'🏆', nom:'Album complet',    desc:'Compléter un album en entier.',               ok: s => s.nbAlbums >= 1, val: s => Math.round(100 * s.albMax), cible: 100, u: ' %'},
-  {id:'moitie',  ico:'📈', nom:'Mi-parcours',      desc:'Posséder la moitié de la collection.',        ok: s => s.pct >= 50, val: s => Math.round(s.pct), cible: 50, u: ' %'},
-  {id:'tout',    ico:'🌈', nom:'Collection complète', desc:'Posséder toutes les cartes.',              ok: s => s.pct >= 100, val: s => Math.round(s.pct), cible: 100, u: ' %'}
+  {id:'premier', ico:'cards', nom:'Premier paquet',  desc:'Ouvrir ton premier paquet.',                 ok: s => s.tirages >= 1, val: s => s.tirages, cible: 1},
+  {id:'serie3',  ico:'flame', nom:'3 jours de suite', desc:'Ouvrir un paquet 3 jours de suite.',          ok: s => s.meilleure >= 3, val: s => s.meilleure, cible: 3},
+  {id:'serie7',  ico:'zap', nom:'7 jours de suite', desc:'Ouvrir un paquet 7 jours de suite.',          ok: s => s.meilleure >= 7, val: s => s.meilleure, cible: 7},
+  {id:'serie30', ico:'star', nom:'30 jours de suite',desc:'Ouvrir un paquet 30 jours de suite.',         ok: s => s.meilleure >= 30, val: s => s.meilleure, cible: 30},
+  {id:'leg1',    ico:'crown', nom:'Légendaire',       desc:'Obtenir ta première carte légendaire.',       ok: s => s.nbLeg >= 1, val: s => s.nbLeg, cible: 1},
+  {id:'rare10',  ico:'gem', nom:'10 raretés',       desc:'Posséder 10 cartes rares ou légendaires.',    ok: s => s.nbRare >= 10, val: s => s.nbRare, cible: 10},
+  {id:'fav10',   ico:'heart', nom:'10 favoris',       desc:'Mettre 10 cartes en favori.',                 ok: s => s.nbFav >= 10, val: s => s.nbFav, cible: 10},
+  {id:'album1',  ico:'trophy', nom:'Album complet',    desc:'Compléter un album en entier.',               ok: s => s.nbAlbums >= 1, val: s => Math.round(100 * s.albMax), cible: 100, u: ' %'},
+  {id:'moitie',  ico:'trend', nom:'Mi-parcours',      desc:'Posséder la moitié de la collection.',        ok: s => s.pct >= 50, val: s => Math.round(s.pct), cible: 50, u: ' %'},
+  {id:'tout',    ico:'rainbow', nom:'Collection complète', desc:'Posséder toutes les cartes.',              ok: s => s.pct >= 100, val: s => Math.round(s.pct), cible: 100, u: ' %'}
 ];
 let badgesCourants = [];
 $('badges').onclick = e => {
   const b = e.target.closest('[data-b]'); if (!b) return;
   const o = badgesCourants.find(x => x.id === b.dataset.b); if (!o) return;
-  $('badge-desc').textContent = (b.classList.contains('lock') ? '🔒 ' : '✅ ') + o.nom + ' : ' + o.desc;
+  $('badge-desc').innerHTML = I(b.classList.contains('lock') ? 'lock' : 'check', b.classList.contains('lock') ? '' : 'ok') + ' ' + esc(o.nom + ' : ' + o.desc);
 };
 
 // ---- énigme de fin d'album (type Pédantix) ----
@@ -1019,16 +1071,16 @@ async function texteEnigme(c){
 
 // vignette N° 31 dans la vue d'un album
 function tuileEnigme(c, debloquee){
-  if (!debloquee) return `<div class="carte verrou enigme"><div class="in"><div class="dos">🔒<small>N° 31 · énigme</small></div></div></div>`;
+  if (!debloquee) return `<div class="carte verrou enigme"><div class="in"><div class="dos">${I('lock')}<small>N° 31 · énigme</small></div></div></div>`;
   const d = etatEnigme(c.id) || {};
-  const lab = d.f ? (d.a ? '🏳' : d.s + ' %') : (d.m && d.m.length ? '⏳' : '?');
-  return `<div class="carte enigme" data-enigme="${c.id}"><div class="in"><div class="dos">🧩<small>N° 31 · énigme</small><b>${esc(lab)}</b></div></div></div>`;
+  const lab = d.f ? (d.a ? I('flag') : esc(d.s + ' %')) : (d.m && d.m.length ? I('hourglass') : '?');
+  return `<div class="carte enigme" data-enigme="${c.id}"><div class="in"><div class="dos">${I('puzzle')}<small>N° 31 · énigme</small><b>${lab}</b></div></div></div>`;
 }
 // badges d'énigme : un par album, avec le pourcentage de réussite
 function badgesEnigmes(){
   return enigmesH.map(c => {
     const d = etatEnigme(c.id) || {}, ok = !!d.f && !d.a;
-    return {id: 'enigme' + c.id, ico: '🧩', nom: 'Énigme ' + albumDe(c), pct: ok ? d.s : null, on: ok,
+    return {id: 'enigme' + c.id, ico: 'puzzle', nom: 'Énigme ' + albumDe(c), pct: ok ? d.s : null, on: ok,
       desc: ok ? `« ${c.Titre} » trouvé : ${d.s} % de réussite (${d.e} propositions, ${fmtT(d.t)}).`
                : `Compléter l'album ${albumDe(c)}, puis résoudre son énigme finale.`};
   });
@@ -1048,14 +1100,14 @@ function revelerTout(){
 }
 function majE(){
   if (!E) return;
-  $('en-stats').textContent = `✏️ ${E.essais} · ⏱ ${fmtT(E.actif / 1000)}`;
+  $('en-stats').innerHTML = `${I('pencil')} ${E.essais} · ${I('timer')} ${fmtT(E.actif / 1000)}`;
   $('en-props').innerHTML = E.prop.map(p =>
-    `<span class="pp ${p.nb || p.ti ? 'ok' : 'no'}">${esc(p.t)}${p.nb ? ` <b>×${p.nb}</b>` : ''}${p.ti ? ' 🎯' : ''}${p.indice ? ' 💡' : ''}</span>`).join('');
+    `<span class="pp ${p.nb || p.ti ? 'ok' : 'no'}">${esc(p.t)}${p.nb ? ` <b>×${p.nb}</b>` : ''}${p.ti ? ' ' + I('target') : ''}${p.indice ? ' ' + I('bulb') : ''}</span>`).join('');
 }
 function tickE(){
   if (!E || E.fini) return;
   if (document.visibilityState === 'visible' && Date.now() - E.last < 60000) E.actif += 1000;   // temps actif : pause si inactif
-  $('en-stats').textContent = `✏️ ${E.essais} · ⏱ ${fmtT(E.actif / 1000)}`;
+  $('en-stats').innerHTML = `${I('pencil')} ${E.essais} · ${I('timer')} ${fmtT(E.actif / 1000)}`;
 }
 
 // sauvegarde : une ligne Collection par énigme, champ Resultat = JSON {m: mots, t: secondes, e: propositions, f: fini, a: abandon, s: score}
@@ -1103,12 +1155,12 @@ function proposer(brut, o = {}){
   let txt;
   if (!neufs) txt = deja > 1 ? 'Ces mots sont déjà révélés ou proposés.' : 'Déjà révélé ou proposé.';
   else if (neufs === 1){
-    txt = o.indice ? `💡 Indice : « ${dernier.m} » (${dernier.nb} fois dans le texte)`
-      : dernier.ti ? `🎯 « ${dernier.m} » fait partie du mot mystère !${dernier.nb ? ` (${dernier.nb} fois dans le texte)` : ''}`
-      : dernier.nb ? `✅ « ${dernier.m} » : ${dernier.nb} fois dans le texte`
-      : `❌ « ${dernier.m} » n'apparaît pas dans le texte`;
+    txt = o.indice ? `${I('bulb')} Indice : « ${esc(dernier.m)} » (${dernier.nb} fois dans le texte)`
+      : dernier.ti ? `${I('target')} « ${esc(dernier.m)} » fait partie du mot mystère !${dernier.nb ? ` (${dernier.nb} fois dans le texte)` : ''}`
+      : dernier.nb ? `${I('check', 'ok')} « ${esc(dernier.m)} » : ${dernier.nb} fois dans le texte`
+      : `${I('cross', 'no')} « ${esc(dernier.m)} » n'apparaît pas dans le texte`;
   }else txt = `${trouves} mot${trouves > 1 ? 's' : ''} trouvé${trouves > 1 ? 's' : ''} sur ${neufs}`;
-  $('en-msg').textContent = txt;
+  $('en-msg').innerHTML = txt;
   majE();
   if (neufs) planSauve();
   if (E.tw.length && E.tw.every(x => E.rev.has(x.n))) victoire();
@@ -1125,9 +1177,9 @@ function afficherResultat(){
   const s = E.actif / 1000, k = calcScore(E.essais, s);
   const lien = E.c.Url ? `<div><a href="${esc(E.c.Url)}" target="_blank" rel="noopener">Lire l'article sur Wikipédia</a></div>` : '';
   $('en-res').innerHTML = E.abandon
-    ? `<div>🏳 Abandonné. La réponse était : <b>${esc(E.c.Titre)}</b></div>${lien}<button id="en-rejouer" type="button">Rejouer</button>`
+    ? `<div>${I('flag')} Abandonné. La réponse était : <b>${esc(E.c.Titre)}</b></div>${lien}<button id="en-rejouer" type="button">Rejouer</button>`
     : `<div class="en-score">${E.score} %</div><div class="barre"><i style="width:${E.score}%"></i></div>
-       <div>🎉 Trouvé : <b>${esc(E.c.Titre)}</b></div>
+       <div>${I('sparkles')} Trouvé : <b>${esc(E.c.Titre)}</b></div>
        <div class="en-det">${E.essais} propositions · ${fmtT(s)} · pénalités : −${k.pe} (propositions), −${k.pt} (temps)</div>${lien}`;
   $('en-res').hidden = false;
   $('en-msg').textContent = ''; $('en-msg').hidden = true;
@@ -1143,7 +1195,7 @@ function victoire(){
   afficherResultat();
   confettis(['#f59e0b', '#fde68a', '#3b82f6', '#10b981', '#ffffff'], 70);
   vib([80, 50, 80]);
-  toast(['🧩 Énigme résolue : ' + E.score + ' %'].concat(!resOK && !APERCU ? ['⚠️ Colonne « Resultat » (Texte) absente de Collection : résultat non sauvegardé'] : []));
+  toast([['puzzle', 'Énigme résolue : ' + E.score + ' %']].concat(!resOK && !APERCU ? [['warn', 'Colonne « Resultat » (Texte) absente de Collection : résultat non sauvegardé']] : []));
   $('enigme').scrollTop = 0;
 }
 
@@ -1154,7 +1206,7 @@ async function ouvrirEnigme(id, reset = false){
   clearInterval(tE); E = null;
   const st = reset ? {} : (etatEnigme(id) || {});
   $('enigme').hidden = false; $('enigme').scrollTop = 0;
-  $('en-titre').textContent = '🧩 Énigme · ' + albumDe(c);
+  $('en-titre').innerHTML = I('puzzle') + ' Énigme · ' + esc(albumDe(c));
   $('en-stats').textContent = ''; $('en-mot').textContent = ''; $('en-props').textContent = ''; $('en-msg').textContent = ''; $('en-msg').hidden = false;
   $('en-res').hidden = true; $('en-form').hidden = true; $('en-actions').hidden = true;
   $('en-texte').textContent = 'Chargement de l\'article…';
@@ -1184,7 +1236,7 @@ async function ouvrirEnigme(id, reset = false){
     revelerTout(); afficherResultat();
   }else{
     $('en-form').hidden = false; $('en-actions').hidden = false;
-    $('en-abandon').textContent = '🏳 Abandonner'; delete $('en-abandon').dataset.sur;
+    $('en-abandon').innerHTML = I('flag') + ' Abandonner'; delete $('en-abandon').dataset.sur;
     majE();
     if (matchMedia('(pointer:fine)').matches) $('en-in').focus();
   }
@@ -1211,7 +1263,7 @@ $('en-abandon').onclick = () => {                       // confirmation en deux 
   if (!E || E.fini) return;
   if (!b.dataset.sur){
     b.dataset.sur = '1'; b.textContent = 'Confirmer l\'abandon ?';
-    tAband = setTimeout(() => { delete b.dataset.sur; b.textContent = '🏳 Abandonner'; }, 4000);
+    tAband = setTimeout(() => { delete b.dataset.sur; b.innerHTML = I('flag') + ' Abandonner'; }, 4000);
     return;
   }
   clearTimeout(tAband);
@@ -1247,7 +1299,7 @@ function lancerCompte(){
 // message sous le paquet + compte à rebours dans l'en-tête
 function infoCompte(message){
   $('info').textContent = message;
-  $('top-sub').innerHTML = '⏳ Prochain paquet dans <b id="compte"></b>';
+  $('top-sub').innerHTML = I('hourglass') + ' Prochain paquet dans <b id="compte"></b>';
   lancerCompte();
 }
 
@@ -1266,7 +1318,7 @@ function confettis(couleurs, n){
 let tToast = null;
 function toast(lignes){
   const t = $('toast');
-  t.innerHTML = lignes.map(l => `<div>${esc(l)}</div>`).join('');
+  t.innerHTML = lignes.map(l => Array.isArray(l) ? `<div>${I(l[0])} ${esc(l[1])}</div>` : `<div>${esc(l)}</div>`).join('');
   t.classList.add('vu');
   clearTimeout(tToast);
   tToast = setTimeout(() => t.classList.remove('vu'), 4500);
@@ -1370,10 +1422,10 @@ async function ouvrir(cle){
     // célébrations à annoncer après la révélation : albums complétés et badges débloqués
     const poss0 = new Set(coll.map(c => c.CarteId)), poss1 = new Set([...poss0, ...ids]);
     const alb0 = albumsComplets(pool, poss0);
-    fetes = [...albumsComplets(pool, poss1)].filter(([k]) => !alb0.has(k)).map(([k, l]) => '🏆 Album complet : ' + l);
+    fetes = [...albumsComplets(pool, poss1)].filter(([k]) => !alb0.has(k)).map(([k, l]) => ['trophy', 'Album complet : ' + l]);
     const s0 = statsJeu(pool, tirages, poss0, cle);
     const s1 = statsJeu(pool, tirages.concat([{Jour: jour}]), poss1, cle);
-    BADGES.filter(b => b.ok(s1) && !b.ok(s0)).forEach(b => fetes.push(`${b.ico} Badge : ${b.nom}`));
+    BADGES.filter(b => b.ok(s1) && !b.ok(s0)).forEach(b => fetes.push([b.ico, 'Badge : ' + b.nom]));
     db.ajouterTirage(jour, ids);
     await charger();                                     // recharge collRows pour pouvoir mettre en favori
     montrerCartes(cartes, true);
@@ -1406,7 +1458,7 @@ async function afficher(){
       }catch(e){ $('info').textContent = 'Erreur : ' + e.message; }
     }
     const nx = aVenir[0];
-    $('app').innerHTML = `<div class="pochette-wrap"><div style="font-size:64px">🎉</div>
+    $('app').innerHTML = `<div class="pochette-wrap"><div style="font-size:64px;line-height:1;color:#3b5b92">${I('sparkles')}</div>
       <div class="p-hint" style="text-align:center">Tu as toutes les cartes disponibles !<br>${nx ? 'Prochain album : ' + esc(fmtDate(nx.date)) : 'De nouveaux albums arrivent bientôt.'}</div></div>`;
     $('info').textContent = '';
     $('top-sub').textContent = nx ? 'Prochain album : ' + fmtDate(nx.date) : 'Collection à jour';
@@ -1415,7 +1467,7 @@ async function afficher(){
       <div class="p-peek"></div>
       <div class="p-haut"></div>
       <div class="p-guide"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="6.5" r="3"/><circle cx="5" cy="17.5" r="3"/><path d="M7.5 8.4L22 14.6M7.5 15.6L22 9.4"/></svg></div>
-      <div class="p-corps"><div class="logo">🎴</div><b>PAQUET DU JOUR</b><small>${Math.min(NB, restants)} carte${Math.min(NB, restants) > 1 ? 's' : ''}</small></div>
+      <div class="p-corps"><div class="logo">${I('cards')}</div><b>PAQUET DU JOUR</b><small>${Math.min(NB, restants)} carte${Math.min(NB, restants) > 1 ? 's' : ''}</small></div>
     </div><div class="p-hint">Touche le paquet pour l'ouvrir</div></div>`;
     initPochette(cle);
     $('info').textContent = '';
@@ -1456,7 +1508,7 @@ function rendreStats(){
 
   $('coll-titre').textContent = 'Mes albums';
   $('stats').innerHTML = `
-    ${APERCU ? '<div style="color:#b45309;font-weight:700;margin-bottom:6px">👁 Mode aperçu : toutes les cartes sont affichées</div>' : ''}
+    ${APERCU ? `<div style="color:#b45309;font-weight:700;margin-bottom:6px">${I('eye')} Mode aperçu : toutes les cartes sont affichées</div>` : ''}
     <div id="st-hero"><div class="ring-w">${anneau(pc)}<div class="ring-c"><b>${pct} %</b><small>${n} / ${tot}</small></div></div>
       <ul><li>Série en cours <b>${courante} j</b></li><li>Record <b>${meilleure} j</b></li>${favOK ? `<li>Favoris <b id="st-fav">${poolC.filter(c => favs.has(c.id)).length}</b></li>` : ''}</ul></div>
     <div class="st-h">Par rareté</div>${rars.map(o => ligne(o, {commune: COUL.commune, rare: COUL.rare, legendaire: COUL.or}[o.k])).join('')}
@@ -1480,9 +1532,9 @@ function rendreEtagere(){
   $('albums').innerHTML = [...m.values()].map(o => {
     const ok = o.t && o.n === o.t;
     return `<button class="album s-${o.src}" data-alb="${esc(o.k)}">
-      <div class="al-couv"><span class="al-ico">${ICONE[o.src] || '📘'}</span><b>${esc(o.lab)}</b><small>Album</small>${ok ? '<i class="al-ok">COMPLET</i>' : ''}</div>
+      <div class="al-couv"><span class="al-ico">${I(ICONE[o.src] || 'book')}</span><b>${esc(o.lab)}</b><small>Album</small>${ok ? '<i class="al-ok">COMPLET</i>' : ''}</div>
       ${mosaique(o.cs)}<span class="al-n">${o.n} / ${o.t}</span></button>`;
-  }).join('') + (nx ? `<div class="album a-venir"><div class="al-couv"><span class="al-ico">🔒</span><b>Prochain album</b><small>${esc(fmtDate(nx.date))}</small></div>
+  }).join('') + (nx ? `<div class="album a-venir"><div class="al-couv"><span class="al-ico">${I('lock')}</span><b>Prochain album</b><small>${esc(fmtDate(nx.date))}</small></div>
       <div class="barre"><i style="width:0"></i></div><span class="al-n">à découvrir</span></div>` : '');
 }
 
@@ -1506,11 +1558,11 @@ function rendreCollection(){
   const pct = liste.length ? Math.round(100 * nP / liste.length) : 0;
   const enig = fav ? null : enigmesH.find(c => cleAlb(c) === albumC);   // énigme N° 31 de cet album, s'il y en a une
   const enigDeb = !!enig && liste.length > 0 && nP === liste.length;
-  $('coll-titre').textContent = fav ? '♥ Mes favoris' : (liste.length ? albumDe(liste[0]) : '');
+  $('coll-titre').innerHTML = fav ? I('heart', 'f') + ' Mes favoris' : esc(liste.length ? albumDe(liste[0]) : '');
   $('al-prog').innerHTML = `<div id="st-top"><span>${nP} / ${liste.length} vignettes</span><span>${pct} %</span></div>
-    <div class="barre"><i style="width:${pct}%"></i></div>${liste.length && nP === liste.length ? `<div style="margin-top:8px">🏆 Album complet !${enigDeb ? ' · 🧩 Énigme N° 31 débloquée' : ''}</div>` : ''}`;
+    <div class="barre"><i style="width:${pct}%"></i></div>${liste.length && nP === liste.length ? `<div style="margin-top:8px">${I('trophy')} Album complet !${enigDeb ? ' · ' + I('puzzle') + ' Énigme N° 31 débloquée' : ''}</div>` : ''}`;
 
-  if (fav) $('al-prog').innerHTML = `<div id="st-top"><span>♥ ${liste.length} favori${liste.length > 1 ? 's' : ''}</span><span>sur ${possC.size} cartes</span></div>`;
+  if (fav) $('al-prog').innerHTML = `<div id="st-top"><span>${I('heart', 'f')} ${liste.length} favori${liste.length > 1 ? 's' : ''}</span><span>sur ${possC.size} cartes</span></div>`;
   const q = norm($('f-q').value.trim());
   const rar = $('f-rar').value, st = fav ? '' : $('f-st').value;
   const owned = [], html = [];
@@ -1533,7 +1585,7 @@ function rendreCollection(){
   g.innerHTML = html.join('');
   g.querySelectorAll('[data-enigme]').forEach(el => { el.onclick = () => ouvrirEnigme(+el.dataset.enigme); });
   $('vide').textContent = fav
-    ? (favOK ? 'Aucun favori pour l\'instant : touche le ♥ d\'une carte.' : 'La colonne Favori (Bascule) est absente de la table Collection.')
+    ? (favOK ? 'Aucun favori pour l\'instant : touche le cœur d\'une carte.' : 'La colonne Favori (Bascule) est absente de la table Collection.')
     : 'Aucune carte ne correspond.';
   $('vide').hidden = html.length > 0;
   if (!vueOK) owned.forEach(c => vues.add(c.id));      // sans colonne Vue : tout est retourné
@@ -1556,7 +1608,7 @@ async function ouvrirCollection(mode = 'albums'){
 
     const fSt = $('f-st'), vSt = fSt.value;
     fSt.innerHTML = '<option value="">Toutes</option><option value="poss">Possédées</option><option value="manq">À découvrir</option>' +
-      (favOK ? '<option value="fav">♥ Favoris</option>' : '');
+      (favOK ? '<option value="fav">Favoris</option>' : '');
     fSt.value = vSt;
 
     rendreStats();
@@ -1576,7 +1628,7 @@ function majAccueil(){
   $('dash').innerHTML = `<div class="ring-w">${anneau(pc)}<div class="ring-c"><b>${Math.round(100 * pc)} %</b><small>${n} / ${tot}</small></div></div>
     <div class="d-r"><h2>14 derniers jours</h2>${calendrier(tirH, cleH)}
       <div class="d-txt">Série en cours : <b>${sr.courante} j</b> · record : <b>${sr.meilleure} j</b></div></div>`;
-  $('top-chips').innerHTML = `<span class="chip">🔥 ${s} j</span><span class="chip">🎴 ${n}/${tot}</span>`;
+  $('top-chips').innerHTML = `<span class="chip">${I('flame', 'or')} ${s} j</span><span class="chip">${I('cards')} ${n}/${tot}</span>`;
   $('t-alb-n').textContent = `${n} / ${tot} cartes`;
   $('t-alb-b').style.width = (tot ? Math.round(100 * n / tot) : 0) + '%';
   $('t-fav-n').textContent = favOK ? `${nf} favori${nf > 1 ? 's' : ''}` : 'indisponible';
@@ -1660,7 +1712,7 @@ $('sauv-reset').onclick = async () => {
 
 try{ navigator.storage && navigator.storage.persist && navigator.storage.persist(); }catch(e){}   // demande de ne pas effacer le stockage
 if (TEST){
-  document.body.insertAdjacentHTML('afterbegin', '<div style="background:#b45309;color:#fff;text-align:center;padding:6px 10px;font-size:13px;font-weight:700;border-radius:8px;margin-bottom:8px">🧪 Mode test : progression séparée, tirages illimités, albums à venir débloqués <button id="test-nouveau" type="button" style="display:block;margin:6px auto 0;border:0;border-radius:8px;padding:7px 12px;background:#fff;color:#b45309;font:inherit;font-weight:700;cursor:pointer">🎴 Nouveau tirage</button></div>');
+  document.body.insertAdjacentHTML('afterbegin', '<div style="background:#b45309;color:#fff;text-align:center;padding:6px 10px;font-size:13px;font-weight:700;border-radius:8px;margin-bottom:8px">' + I('flask') + ' Mode test : progression séparée, tirages illimités, albums à venir débloqués <button id="test-nouveau" type="button" style="display:block;margin:6px auto 0;border:0;border-radius:8px;padding:7px 12px;background:#fff;color:#b45309;font:inherit;font-weight:700;cursor:pointer">' + I('cards') + ' Nouveau tirage</button></div>');
   $('test-nouveau').onclick = () => { onglet('jour'); afficher().catch(e => { $('info').textContent = 'Erreur : ' + e.message; }); };
 }
 majOnglet('jour');
