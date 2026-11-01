@@ -18,9 +18,10 @@
 
   /* en-tête */
   #top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 2px 10px}
-  #top h1{margin:0;font-size:22px;line-height:1.15}
-  #top h1 small{display:block;font-size:12px;font-weight:500;color:#777;margin-top:2px}
-  #top h1 small b{font-variant-numeric:tabular-nums;color:#3b5b92;font-size:13px}
+  :root{--rond:ui-rounded,"SF Pro Rounded","Arial Rounded MT Bold","Varela Round","Nunito",system-ui,-apple-system,sans-serif}
+  .sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  #top-sub{flex:1;min-width:0;font-family:var(--rond);font-size:18px;font-weight:800;line-height:1.2;letter-spacing:-.01em;color:#3b5b92;text-wrap:balance}
+  #top-sub b{font-variant-numeric:tabular-nums;color:#6a3b92;font-weight:800}
   .chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
   .chip{background:#fff;border-radius:16px;padding:5px 10px;font-size:12px;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12);white-space:nowrap}
 
@@ -76,7 +77,7 @@
   .pochette.dechire .p-guide{display:none}
   .pochette.dechire .p-peek{transform:translateY(-34px) rotate(-3deg)}
   .pochette.sort{transition:transform .5s ease-in,opacity .5s;transform:translateY(60px) scale(.85);opacity:0}
-  .p-hint{color:#555;font-size:14px;font-weight:600}
+  .p-hint{color:#555;font-size:15px;font-weight:700;font-family:var(--rond)}
   @keyframes wiggle{0%,86%,100%{transform:rotate(0)}90%{transform:rotate(-2.5deg)}94%{transform:rotate(2.5deg)}98%{transform:rotate(-1deg)}}
   @keyframes brille{from{background-position:150% 0}to{background-position:-100% 0}}
   .carte.deal{animation:deal .55s cubic-bezier(.2,.8,.2,1) both}
@@ -118,7 +119,7 @@
     background:rgba(255,255,255,.88);color:#999;font-size:20px;line-height:1;cursor:pointer}
   .fav.est{color:#e11d48}
 
-  #info{margin-top:14px;text-align:center;color:#555;font-size:13px}
+  #info{margin-top:14px;text-align:center;color:#555;font-size:14px;font-weight:700;font-family:var(--rond)}
 
   /* collection */
   #coll{position:fixed;inset:0 0 var(--nav-h) 0;z-index:5;background:#f4f1ea;overflow:auto;padding:12px}
@@ -320,7 +321,8 @@
 </head>
 <body>
 <header id="top">
-  <h1>🎴 Secret santa de Claire<small id="top-sub">Ta collection quotidienne</small></h1>
+  <h1 class="sr">Secret santa de Claire</h1>
+  <div id="top-sub">Ta collection quotidienne</div>
   <div class="chips" id="top-chips"></div>
 </header>
 <div id="app"></div>
